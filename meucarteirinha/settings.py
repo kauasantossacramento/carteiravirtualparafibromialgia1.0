@@ -9,7 +9,7 @@ ALLOWED_HOSTS = ["carteirinhadigitalvalenca.pythonanywhere.com"]
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "carteirinhadigitalvalenca.pythonanywhere.com",
+    "https://carteirinhadigitalvalenca.pythonanywhere.com",
 ]
 
 
