@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Prévia da Carteirinha{% endblock %}
+
+{% block content %}
+<section class="preview-wrap">
+  <div class="preview-bg"></div>
+
+  <div class="preview-card">
+    <div class="preview-card__head"></div>
+
+    <div class="preview-card__inner">
+      <h3 class="preview-title">
+        CARTEIRINHA DE IDENTIFICAÇÃO DA<br>
+        PESSOA COM FIBROMIALGIA
+      </h3>
+
+      <div class="preview-photo">
+        {% if foto_url %}
+          <img src="{{ foto_url }}" alt="Foto 3x4">
+        {% else %}
+          <div class="ph">3x4</div>
+        {% endif %}
+      </div>
+
+      <div class="preview-label">Nome</div>
+      <div class="preview-name">{{ nome }}</div>
+
+      <div class="preview-cols" style='display: flex; align-items: center; justify-content: center;'>
+        <div>
+          <div class="preview-label-sm">Data de Nascimento</div>
+          <div class="preview-val">{{ nasc_fmt }}</div>
+        </div>
+        <div>
+          <div class="preview-label-sm">CPF</div>
+          <div class="preview-val">{{ cpf_fmt }}</div>
+        </div>
+      </div>
+
+      <div class="preview-qr" style='display: flex; align-items: center; justify-content: center;'>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ url_validacao|urlencode }}" alt="QR">
+        <div class="preview-qr-text">
+          Verifique a autenticidade<br>
+          deste documento escaneando<br>
+          o código ou acessando:<br>
+          <strong>validar.carteirinha.com.br</strong><br>
+          COD: {{ s.codigo }}
+        </div>
+      </div>
+
+      <div class="preview-legal">
+        Atendimento Prioritário | Lei Federal<br>
+        N° Lei nº <strong>15.176/2025</strong>
+      </div>
+
+      <div class="preview-logos">
+        <img src="{% static 'img/logo-prefeitura1.png' %}" style='margin-top: 10px;' alt="Prefeitura">
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-actions">
+    <a class="btn btn--primary btn--lg" href="{% url 'cadastro:emitir' s.id %}">Baixar Versão para Impressão</a>
+  </div>
+</section>
+{% endblock %}

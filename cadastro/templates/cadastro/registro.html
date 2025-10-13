@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Novo Cadastro · Carteira Fibromialgia{% endblock %}
+
+{% block content %}
+<section class="container">
+  <div class="card card--form">
+    <div class="card__header">
+      <div class="hero__badge">
+        <span class="hero__icon">📝</span>
+        <span>Novo Cadastro / Solicitação</span>
+      </div>
+      <h2 class="card__title">Preencha os dados abaixo</h2>
+      <p class="card__subtitle">Anexe os documentos obrigatórios (RG, laudo com CID-10, foto 3x4) e envie para análise.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="form-alert">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      <div class="form-grid">
+        {% for field in form %}
+        <div class="field {% if field.errors %}has-error{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}
+          <small class="help">{{ field.help_text|safe }}</small>
+          {% endif %}
+          {% for err in field.errors %}
+            <div class="error">{{ err }}</div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="form-actions">
+        <a href="{% url 'cadastro:index' %}" class="btn btn--outline" style="text-decoration: none;">Cancelar</a>
+        <button type="submit" class="btn btn--primary btn--lg">Enviar Solicitação</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+(function () {
+  const cpfInput =
+    document.querySelector('input[name$="cpf"]') ||
+    document.querySelector('input[id$="cpf"]');
+  if (!cpfInput) return;
+
+  // ===== helpers =====
+  const getDigits = v => String(v || '').replace(/\D/g, '');
+  function maskCPF(digits) {
+    digits = getDigits(digits).slice(0, 11);
+    let out = '';
+    for (let i = 0; i < digits.length; i++) {
+      out += digits[i];
+      if (i === 2 || i === 5) out += '.';
+      if (i === 8) out += '-';
+    }
+    return out;
+  }
+  function digitsCount(str) { return (str.match(/\d/g) || []).length; }
+  // posição do caret após o N-ésimo dígito (1-based). 0 => início
+  function caretPosForNthDigit(masked, n) {
+    if (n <= 0) return 0;
+    let count = 0;
+    for (let i = 0; i < masked.length; i++) {
+      if (/\d/.test(masked[i])) {
+        count++;
+        if (count === n) return i + 1;
+      }
+    }
+    return masked.length;
+  }
+
+  // ===== UI/UX básico =====
+  let err = cpfInput.nextElementSibling;
+  if (!err || !err.classList.contains('error')) {
+    err = document.createElement('div');
+    err.className = 'error';
+    err.style.display = 'none';
+    err.style.marginTop = '6px';
+    cpfInput.insertAdjacentElement('afterend', err);
+  }
+  const showError = msg => { err.textContent = msg; err.style.display = 'block'; cpfInput.classList.add('has-error'); cpfInput.setCustomValidity(msg); };
+  const clearError = () => { err.textContent = ''; err.style.display = 'none'; cpfInput.classList.remove('has-error'); cpfInput.setCustomValidity(''); };
+
+  cpfInput.setAttribute('inputmode', 'numeric');
+  cpfInput.setAttribute('autocomplete', 'off');
+  cpfInput.setAttribute('maxlength', '14'); // máscara
+  if (!cpfInput.placeholder) cpfInput.setAttribute('placeholder', '000.000.000-00');
+  if (/^\d{11}$/.test(cpfInput.value)) cpfInput.value = maskCPF(cpfInput.value);
+
+  // ===== captura do que o usuário pretende (antes do browser aplicar) =====
+  let lastIntent = null; // { type, data, digitsBefore }
+  cpfInput.addEventListener('beforeinput', (e) => {
+    // quantos dígitos existem antes do caret atual
+    const start = cpfInput.selectionStart || 0;
+    const before = cpfInput.value.slice(0, start);
+    const digitsBefore = digitsCount(before);
+
+    // só permitimos inserir dígitos; se vier caractere que não é dígito, cancela
+    if (e.inputType === 'insertText' && e.data && /\D/.test(e.data)) {
+      e.preventDefault(); // evita “travamento” e entrada de símbolos
+      return;
+    }
+
+    lastIntent = {
+      type: e.inputType,       // insertText, deleteContentBackward, deleteContentForward, etc.
+      data: e.data || '',
+      digitsBefore
+    };
+  });
+
+  // ===== ao input: formatar e recuperar o caret corretamente =====
+  cpfInput.addEventListener('input', () => {
+    const digits = getDigits(cpfInput.value).slice(0, 11);
+    const masked = maskCPF(digits);
+
+    // Se não houve beforeinput (casos raros), coloca caret no fim
+    let desiredDigitsBefore = digits.length;
+
+    if (lastIntent) {
+      desiredDigitsBefore = lastIntent.digitsBefore;
+      if (lastIntent.type === 'insertText' && /\d/.test(lastIntent.data)) {
+        desiredDigitsBefore = Math.min(digits.length, desiredDigitsBefore + 1);
+      } else if (lastIntent.type === 'deleteContentBackward') {
+        desiredDigitsBefore = Math.max(0, desiredDigitsBefore - 1);
+      } else if (lastIntent.type === 'deleteContentForward') {
+        // mantém
+      }
+    }
+
+    cpfInput.value = masked;
+    const newPos = caretPosForNthDigit(masked, desiredDigitsBefore);
+    requestAnimationFrame(() => cpfInput.setSelectionRange(newPos, newPos));
+
+    lastIntent = null;
+    clearError();
+    cpfInput.setCustomValidity('');
+  });
+
+  // ===== validação =====
+  cpfInput.addEventListener('blur', validateField);
+
+  function cpfDV(cpf) {
+    if (!cpf || cpf.length !== 11) return false;
+    if (/^(\d)\1{10}$/.test(cpf)) return false;
+    let s = 0, r;
+    for (let i = 1; i <= 9; i++) s += parseInt(cpf[i-1],10)*(11-i);
+    r = (s*10)%11; if (r===10||r===11) r=0;
+    if (r !== parseInt(cpf[9],10)) return false;
+    s = 0;
+    for (let i = 1; i <= 10; i++) s += parseInt(cpf[i-1],10)*(12-i);
+    r = (s*10)%11; if (r===10||r===11) r=0;
+    return r === parseInt(cpf[10],10);
+  }
+  function validateField() {
+    const digits = getDigits(cpfInput.value);
+    if (digits.length !== 11) { showError('Informe um CPF com 11 dígitos.'); return false; }
+    if (!cpfDV(digits)) { showError('CPF inválido.'); return false; }
+    clearError(); return true;
+  }
+
+  // ===== envio sem máscara =====
+  const form = cpfInput.closest('form');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      const digits = getDigits(cpfInput.value);
+      if (!cpfDV(digits)) {
+        e.preventDefault();
+        showError(digits.length !== 11 ? 'Informe um CPF com 11 dígitos.' : 'CPF inválido.');
+        cpfInput.focus();
+        return;
+      }
+      cpfInput.value = digits; // Django recebe 11 chars (sem pontos/traço)
+      clearError();
+      cpfInput.setCustomValidity('');
+    });
+  }
+})();
+</script>
+
+
+{% endblock %}
+

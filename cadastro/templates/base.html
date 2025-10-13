@@ -1,0 +1,74 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>{% block title %}Carteira de Identificação da Fibromialgia • Prefeitura de Valença{% endblock %}</title>
+
+  <!-- Fonte institucional -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="bg-page">
+
+<div class="topbar topbar--logos">
+  <div class="container">
+    <div class="logos-row">
+      <img src="{% static 'img/logo-cadastro-inclusivo.png' %}" alt="Cadastro Inclusivo Municipal" class="logo-img">
+      <img src="{% static 'img/logo-prefeitura.png' %}" alt="Prefeitura de Valença" class="logo-img">
+    </div>
+  </div>
+</div>
+<!-- Cabeçalho com navegação simples -->
+
+<header class="header header--simple">
+  <div class="container header__wrap">
+    {% with current=request.resolver_match.url_name %}
+    <nav class="nav nav--simple">
+      <a class="nav__link {% if current == 'index' %}is-active{% endif %}"
+         href="{% url 'cadastro:index' %}">início</a>
+
+      <a class="nav__link {% if current == 'validar_index' or current == 'validar' %}is-active{% endif %}"
+         href="{% url 'cadastro:validar_index' %}">validar</a>
+
+      <a class="nav__link {% if current == 'registro' %}is-active{% endif %}"
+         href="{% url 'cadastro:registro' %}">cadastre-se</a>
+
+      {% if user.is_authenticated %}
+        <a class="nav__link {% if current == 'acompanhamento' %}is-active{% endif %}"
+           href="{% url 'cadastro:acompanhamento' %}">acompanhar</a>
+        <a class="nav__link" href="{% url 'cadastro:logout' %}">sair</a>
+      {% else %}
+        <a class="nav__link {% if current == 'login' %}is-active{% endif %}"
+           href="{% url 'cadastro:login' %}">acompanhar</a>
+      {% endif %}
+    </nav>
+    {% endwith %}
+  </div>
+</header>
+
+
+
+  <!-- Conteúdo principal -->
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Rodapé institucional -->
+  <footer class="footer">
+    <div class="container footer__wrap">
+      <div class="footer__logos">
+        <img src="{% static 'img/logo-prefeitura1.png' %}" alt="Prefeitura de Valença" class="brand">
+      </div>
+      <p class="footer__text">Cadastro Municipal da Fibromialgia • Carteira de Identificação da Pessoa com Fibromialgia</p>
+    </div>
+  </footer>
+
+  {% block body_extra %}{% endblock %}
+</body>
+</html>

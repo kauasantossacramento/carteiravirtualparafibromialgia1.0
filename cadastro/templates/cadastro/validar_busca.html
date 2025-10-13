@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Validar Carteirinha{% endblock %}
+
+{% block content %}
+<section class="container">
+  <div class="card card--form">
+    <div class="card__header">
+      <div class="hero__badge">
+        <span class="hero__icon">🔎</span>
+        <span>Validar Carteirinha</span>
+      </div>
+      <h2 class="card__title">Digite o código da carteirinha</h2>
+      <p class="card__subtitle">
+        Você encontra o código logo abaixo do QR Code na carteirinha impressa/digital.
+      </p>
+    </div>
+
+    <form method="get" action="{% url 'cadastro:validar_index' %}" class="form-inline" novalidate>
+      <div class="field">
+        <label for="codigo">Código</label>
+        <input id="codigo" name="codigo" type="text" required
+               placeholder="Ex.: D8CB6011E3CC4E9E"
+               pattern="[A-Za-z0-9\-]{6,}"
+               inputmode="latin"
+               autocomplete="off" />
+        <small class="help">Aceita letras e números (sem espaços).</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn--primary btn--lg">Validar</button>
+        <a class="btn btn--outline" href="{% url 'cadastro:index' %}">Voltar ao início</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

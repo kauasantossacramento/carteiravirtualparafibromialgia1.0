@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Entrar · Carteira Fibromialgia{% endblock %}
+
+{% block content %}
+<section class="container">
+  <div class="card card--form">
+    <div class="card__header">
+      <div class="hero__badge">
+        <span class="hero__icon">👤</span>
+        <span>Acesse sua conta</span>
+      </div>
+      <h2 class="card__title">Entrar</h2>
+      <p class="card__subtitle">Use seu CPF e senha para acompanhar sua solicitação.</p>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+      <div class="form-alert">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+      {% for field in form %}
+      <div class="field {% if field.errors %}has-error{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+        <small class="help">{{ field.help_text|safe }}</small>
+        {% endif %}
+        {% for err in field.errors %}
+          <div class="error">{{ err }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn--primary btn--lg">Entrar</button>
+        <a class="link" href="{% url 'cadastro:registro' %}">não tenho cadastro</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

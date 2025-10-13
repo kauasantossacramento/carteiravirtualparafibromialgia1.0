@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Resultado da Validação{% endblock %}
+
+{% block content %}
+<section class="container">
+  <div class="card card--form validate">
+    <div class="card__header">
+      {% if valido %}
+        <div class="status-badge is-valid">✅ Carteirinha VÁLIDA</div>
+        <h2 class="card__title">Documento conferido com sucesso</h2>
+        <p class="card__subtitle">Os dados abaixo correspondem ao titular da carteirinha.</p>
+      {% else %}
+        <div class="status-badge is-invalid">❌ Código inválido</div>
+        <h2 class="card__title">Não foi possível validar</h2>
+        <p class="card__subtitle">Verifique o código informado ou tente novamente.</p>
+      {% endif %}
+    </div>
+
+    {% if valido %}
+      <div class="validate__grid">
+        <div class="validate__info">
+          <div class="kv">
+            <span class="kv__label">Nome</span>
+            <span class="kv__value">
+              {{ solicitacao.usuario.get_full_name|default:solicitacao.usuario.username }}
+            </span>
+          </div>
+
+          <div class="kv">
+            <span class="kv__label">CPF</span>
+            <span class="kv__value">{{ solicitacao.usuario.cpf }}</span>
+          </div>
+
+          <div class="kv">
+            <span class="kv__label">Código</span>
+            <span class="kv__value code">{{ solicitacao.codigo }}</span>
+          </div>
+
+          <div class="note">
+            Em caso de dúvidas, entre em contato com a Secretaria de Saúde do Município de Valença.
+          </div>
+        </div>
+    {% endif %}
+
+    <div class="form-actions">
+      <a class="btn btn--outline" href="{% url 'cadastro:validar_index' %}">Validar outro código</a>
+      <a class="btn" href="{% url 'cadastro:index' %}">Voltar ao início</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

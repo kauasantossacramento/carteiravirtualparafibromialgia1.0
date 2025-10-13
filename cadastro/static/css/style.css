@@ -1,0 +1,700 @@
+/* =========================
+   Base & Tokens
+   ========================= */
+:root{
+  /* Cores principais */
+  --text:#2A2334;          /* texto p/ fundo branco */
+  --muted:#5a5767;
+  --brand:#7b1a91;         /* roxo principal */
+  --brand-2:#8a2eb0;       /* roxo secundário */
+  --accent:#5bcb9e;        /* verdinho (detalhes) */
+
+  /* Cores dos cards roxos */
+  --card-start:#31123d;
+  --card-end:#2a0a33;
+
+  /* Utilidades */
+  --shadow-lg:0 12px 34px rgba(0,0,0,.16);
+  --shadow-md:0 8px 20px rgba(0,0,0,.12);
+  --border:#ece8f1;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:#fff;         /* >>> FUNDO BRANCO <<< */
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* =========================
+   Topbar institucional (opcional)
+   ========================= */
+.topbar{background:linear-gradient(90deg, #2a0833, #3b0f49); color:#fff}
+.topbar__wrap{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.brand{height:95px;}
+.brand.small{height:26px}
+.brand-left,.brand-right{display:flex;gap:16px;align-items:center}
+
+/* =========================
+   Header & Navegação
+   ========================= */
+.header{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--border)}
+.header__wrap{display:flex;justify-content:space-between;align-items:center;padding:12px 0}
+.logo-inline{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-weight:700}
+.logo-icon{font-size:20px}
+.nav{display:flex;align-items:center;gap:10px}
+.nav a{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+
+/* Botões (sistema de tamanhos) */
+.btn{
+  appearance:none;border:0;border-radius:12px;min-height:42px;
+  padding:0 16px;line-height:1;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .06s ease, filter .2s ease, box-shadow .2s ease;
+}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.03)}
+.btn:active{transform:translateY(0)}
+.btn--primary{color:#fff;background:linear-gradient(135deg,#5c1371,var(--brand-2));box-shadow:var(--shadow-md)}
+.btn--outline{color:var(--text);background:#fff;border:1px solid #e6e2ea}
+.btn--ghost{color:var(--text);background:transparent;border:1px solid #e6e2ea}
+.btn--lg{min-height:50px;padding:0 20px;font-size:1.02rem}
+.btn--md{font-size:.98rem}
+.btn--sm{font-size:.9rem;min-height:38px;padding:0 12px}
+.link{color:white;}
+.link:hover{color:var(--text)}
+
+/* =========================
+   Hero (capa full-bleed)
+   ========================= */
+/* força o bloco a ocupar a largura total da viewport */
+.full-bleed{
+  width:100vw;position:relative;
+  margin-left:-50vw;margin-right:-50vw;
+}
+
+/* faixa com imagem de fundo definida pela custom property --hero */
+.hero.hero--banner{
+  margin: 20px;                       /* sem espaçamento */
+  border-radius: 25px;                /* cantos retos */
+  position:relative; isolation:isolate;
+  background-image:
+     linear-gradient(180deg, rgba(20, 0, 32, .40) 0%, rgba(20, 0, 32, .40) 100%),
+     var(--hero);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  min-height:360px;
+  display:flex; align-items:center;
+}
+
+/* conteúdo central da capa */
+.hero__inner{width:100%;max-width:1100px;margin:0 auto;padding:36px 20px}
+.hero__badge{
+  display:inline-flex;gap:10px;align-items:center;
+  padding:8px 12px;border-radius:999px;
+  background:rgba(255,255,255,.92); color:#2b0a39;
+  border:1px solid rgba(0,0,0,.06); font-weight:600
+}
+.hero__icon{font-size:18px}
+.hero__title{
+  margin:18px 0 16px; font-size:2rem; line-height:1.25; color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.4); max-width:900px
+}
+.hero__actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero__actions .btn--primary{box-shadow:0 8px 20px rgba(123,26,145,.35)}
+.hero__actions .btn--outline{background:rgba(255,255,255,.9)}
+
+/* Retira qualquer espaço entre a capa e o próximo bloco */
+.hero.hero--banner + .faq{margin-top:0}
+
+/* =========================
+   Cards (FAQ / blocos roxos)
+   ========================= */
+.faq{
+  display:grid; gap:14px; margin:0 0 56px;
+  padding:24px 20px; max-width:1100px; margin-left:auto; margin-right:auto;
+}
+.faq__item{
+  background:linear-gradient(180deg, rgba(49,18,61,.97), rgba(42,10,51,.95));
+  color:#f4f2f7;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:16px; padding:18px 20px; box-shadow:var(--shadow-lg);
+}
+.faq__header{margin-bottom:6px}
+.chip{
+  display:inline-block;background:#4b1a5b;color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+  padding:8px 12px;border-radius:10px;
+}
+.faq__text{color:#f1eaf7;margin:8px 0 0}
+.faq__cta{
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#2a0833,#3b0f49);
+}
+.faq__cta .plus{
+  display:inline-grid;place-items:center;width:32px;height:32px;
+  border-radius:8px;background:#580d72;font-weight:800;color:#fff;
+}
+
+/* =========================
+   Footer
+   ========================= */
+.footer{padding:28px 0;background:#fff;border-top:1px solid var(--border)}
+.footer__wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.footer__logos{display:flex;gap:14px;align-items:center}
+.footer__text{color:var(--muted);font-size:.92rem; text-align: center;}
+
+/* =========================
+   Responsividade
+   ========================= */
+@media (max-width: 960px){
+  .brand{height:85px}
+  .brand.small{height:24px}
+}
+
+@media (max-width: 860px){
+  .hero.hero--banner{min-height:320px}
+  .hero__title{font-size:1.7rem}
+}
+
+@media (max-width: 560px){
+  .hero__title{font-size:1.46rem}
+  .hero__actions{flex-direction:column;align-items:stretch}
+  .btn{width:100%}
+}
+/* ------- layout geral -------- */
+.container{max-width:1100px;margin:0 auto;padding:20px; display: flex;flex-direction: column;align-items: center;justify-content: center;}
+
+/* full-bleed: faz a seção ocupar a viewport inteira de largura */
+.full-bleed{
+  width:100%;position:relative; padding: 20px;
+  margin-left:-50vw;margin-right:-50vw;
+}
+
+/* ------- HERO (faixa principal) -------- */
+.hero.hero--banner{
+  margin-top:20px;                 /* sem espaçamento acima/abaixo */
+  border-radius:0;          /* sem cantos arredondados */
+  position:relative;isolation:isolate;
+  /* usa --hero como imagem e --hero-focus para posicionar o foco */
+  background-image:
+     linear-gradient(180deg, rgb(20 0 32 / 0%) 0%, rgb(20 0 32 / 0%) 100%), var(--hero);
+  background-position: var(--hero-focus, center);
+  background-size:cover;
+  background-repeat:no-repeat;
+  border-radius: 20px;
+  margin-bottom: 10px !important;
+
+  /* altura responsiva: usa aspect-ratio como fallback visual */
+  min-height: clamp(280px, 38vw, 420px);
+  aspect-ratio: 16/5; /* não fixa a altura, só ajuda em telas muito largas */
+
+  display:flex; align-items:center;
+}
+
+/* conteúdo central do hero */
+.hero__inner{
+  width:100%;max-width:1100px;margin:0 auto;
+  padding: clamp(20px, 4vw, 40px) 20px;
+}
+
+.hero__badge{
+  display:inline-flex;gap:10px;align-items:center;
+  padding:8px 12px;border-radius:999px;
+  background:rgba(255,255,255,.92); color:#2b0a39;
+  border:1px solid rgba(0,0,0,.06); font-weight:600
+}
+.hero__icon{font-size:18px}
+.hero__title{
+  margin: clamp(10px, 2vw, 18px) 0 16px;
+  font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+  line-height:1.22; color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.4);
+  max-width: min(900px, 95%);
+}
+.hero__actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero__actions .btn{min-width: clamp(180px, 28vw, 240px)}
+.hero__actions .btn--primary{box-shadow:0 8px 20px rgba(123,26,145,.35)}
+.hero__actions .btn--outline{background:rgba(255,255,255,.9)}
+
+/* remove qualquer espaço entre a capa e a próxima seção */
+.hero.hero--banner + .container,
+.hero.hero--banner + .faq { margin-top: 0; }
+
+/* ------- FAQ / CARDS -------- */
+/* se a sua .faq já tem container, pode remover este container extra */
+.faq.container{padding-top:24px}
+
+/* ------- Header / Navegação: botões alinhados -------- */
+.header{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid #ece8f1}
+.header__wrap{display:flex;justify-content:space-between;align-items:center;padding:12px 20px}
+.nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{appearance:none;border:0;border-radius:12px;min-height:42px;padding:0 16px;line-height:1;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .06s ease, filter .2s ease, box-shadow .2s ease}
+.btn--primary{color:#fff;background:linear-gradient(135deg,#5c1371,#8a2eb0);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.btn--outline{color:#2A2334;background:#fff;border:1px solid #e6e2ea}
+.btn--lg{min-height:50px;padding:0 20px;font-size:1.02rem}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.03)}
+
+/* ------- Breakpoints (responsividade real) -------- */
+@media (max-width: 960px){
+  .hero__title{max-width: 680px}
+}
+@media (max-width: 720px){
+  .hero.hero--banner{aspect-ratio: auto; min-height: 320px}
+  .hero__actions{flex-direction:column;align-items:stretch}
+  .hero__actions .btn{width:100%}
+}
+@media (max-width: 480px){
+  .header__wrap{padding:10px 16px}
+  .hero__title{font-size:1.35rem}
+  .hero__inner{padding:20px 16px}
+}
+
+
+/* ===== Faixa institucional (logos lado a lado) ===== */
+.topbar--logos{
+  background: linear-gradient(90deg, #2a0833, #3b0f49);
+  padding: 10px 0;
+}
+.logos-row{
+  display:flex; align-items:center; justify-content:center;
+  gap:18px; flex-wrap:wrap;
+}
+.logo-img{height:55px; display:block; filter:drop-shadow(0 2px 6px rgba(0,0,0,.18))}
+.logo-img.small{height:28px}
+.logos-sep{width:1px; height:28px; background:rgba(255,255,255,.28); border-radius:1px}
+
+/* Responsivo das logos */
+@media (max-width: 640px){
+  .logo-img{height:35px}
+  .logo-img.small{height:22px}
+  .logos-sep{display:none}
+}
+
+
+
+/* Header simples */
+.header--simple{
+  background:#fff;
+  border-bottom:1px solid #ece8f1;
+}
+.header--simple .header__wrap{
+  display:flex; align-items:center; justify-content:center;
+  padding:12px 0;
+}
+
+/* Navegação simples lado a lado */
+.nav--simple{
+  display:flex; gap:22px; align-items:center; justify-content:center; flex-wrap:wrap;
+}
+.nav__link{
+  color:#6c6c73; text-decoration:none; font-weight:600;
+  padding:10px 2px; border-bottom:2px solid transparent;
+  transition:color .2s ease, border-color .2s ease;
+}
+.nav__link:hover{ color:#3a3a40; border-color:#d9d7df; }
+
+/* Ativo: linha inferior sutil */
+.nav__link.is-active{
+  color:#2a2334;
+  border-color:#bfb8cc;   /* linha inferior de destaque suave */
+}
+
+/* Mobile: mantém lado a lado e permite quebra elegante */
+@media (max-width: 520px){
+  .nav--simple{gap:16px}
+  .nav__link{padding:8px 2px}
+}
+
+
+/* =========================
+   Cards de formulário
+   ========================= */
+.card{
+  background: linear-gradient(180deg, rgb(49 18 61), rgb(51 10 39 / 59%));
+  color:#fff;
+  border:1px solid rgba(0,0,0,.06);
+  border-radius:18px;
+  box-shadow:0 12px 34px rgba(0,0,0,.16);
+}
+.card--form{max-width:760px;margin:28px auto;padding:22px 22px}
+.card__header{margin-bottom:12px}
+.card__title{margin:10px 0 6px;font-size:1.5rem}
+.card__subtitle{margin:0;color:#e9e5f1}
+
+/* =========================
+   Formulário
+   ========================= */
+form{margin-top:12px}
+.form-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:14px;
+}
+@media (max-width: 720px){
+  .form-grid{grid-template-columns:1fr}
+}
+
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{
+  font-weight:600; color:#fff; letter-spacing:.2px;
+}
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="password"],
+.field input[type="date"],
+.field input[type="tel"],
+.field select,
+.field textarea{
+  width:100%;
+  background:#fff;
+  color:#2a2334;
+  border:1px solid #e6e2ea;
+  border-radius:12px;
+  min-height:44px;
+  padding:10px 12px;
+  outline:none;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.field textarea{min-height:110px; resize:vertical}
+.field input[type="file"]{
+  background:#fff;
+  color:#2a2334;
+  border:1px dashed #d9d7df;
+  border-radius:12px;
+  padding:10px 12px;
+}
+
+.field :is(input,select,textarea):focus{
+  border-color:#b78ad0;
+  box-shadow:0 0 0 3px rgba(183,138,208,.25);
+}
+
+.has-error :is(input,select,textarea){
+  border-color:#ff4d6d;
+  box-shadow:0 0 0 3px rgba(255,77,109,.18);
+}
+
+.help{color:#e8deee;font-size:.82rem}
+.error{
+  margin-top:2px;
+  font-size:.84rem;
+  color:#ffd9e1;
+  background:rgba(255,77,109,.16);
+  border:1px solid rgba(255,77,109,.45);
+  padding:6px 8px;border-radius:8px
+}
+
+.form-alert{
+  background:rgba(255,231,164,.15);
+  border:1px solid rgba(255,231,164,.45);
+  color:#fff1c6;
+  padding:8px 10px;border-radius:10px;margin-bottom:10px
+}
+
+.form-actions{
+  display:flex;gap:12px;justify-content:flex-end;align-items:center;
+  margin-top:16px;flex-wrap:wrap;
+}
+.form-actions .btn{min-width:180px}
+@media (max-width:560px){
+  .form-actions{flex-direction:column-reverse;align-items:stretch}
+  .form-actions .btn{width:100%}
+}
+
+/* Corrige cor do placeholder em inputs claros sobre card roxo */
+.field input::placeholder,
+.field textarea::placeholder{color:#7f7a88}
+
+/* --- Corrige qualquer overflow horizontal e centraliza de verdade --- */
+html, body { width: 100%; overflow-x: hidden; }
+
+/* Imagens e mídias nunca passam de 100% */
+img, svg, video, canvas, iframe { max-width: 100%; height: auto; display: block; }
+
+/* Full-bleed estável (sem left:-50vw/right:-50vw) */
+.full-bleed{
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  position: relative; left: 0; right: 0;  /* zera offsets */
+}
+
+/* Contêiner com safe-area e padding simétrico */
+.container{
+  max-width: 1100px;
+  margin-left: auto; margin-right: auto;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+/* Card de formulário sempre central */
+.card--form{
+  width: min(760px, 100%);     /* nunca maior que a viewport */
+  margin-left: auto; margin-right: auto;
+}
+
+/* Header alinhado ao centro e sem “sobra” */
+.header__wrap{
+  justify-content: center;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+/* Hero: remata qualquer sobra de largura e ajusta foco/altura no mobile */
+@media (max-width: 640px){
+  .full-bleed{
+    /* mantém full-bleed sem estourar; se preferir, pode zerar o full-bleed aqui */
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .hero.hero--banner{
+    background-position: var(--hero-focus, center 35%);
+    min-height: 320px;        /* altura confortável em celular */
+  }
+
+  /* Garante centralização visual dos blocos seguintes */
+  .faq, .container { padding-left: 16px; padding-right: 16px; }
+}
+
+/* Breakpoint extra para telas muito estreitas */
+@media (max-width: 380px){
+  .hero__title{ font-size: 1.28rem; }
+  .nav--simple{ gap: 12px; }
+}
+
+
+/* Anti-overflow global */
+html, body { width: 100%; overflow-x: hidden; }
+
+/* Full-bleed estável: usa svw quando disponível (não conta scrollbar) */
+.full-bleed{
+  margin-inline: calc(50% - 50vw);
+  position: relative;
+}
+
+@supports (width: 100svw){
+  .full-bleed{
+    width: 85svw;
+    margin-inline: calc(50% - 50svw);
+  }
+}
+
+/* Containers nunca excedem a viewport */
+.container{
+  max-width: 1100px;
+  margin-inline: auto;
+  padding-inline: max(16px, env(safe-area-inset-left));
+  padding-top: 10px;
+}
+
+/* ----- Fix específico para <= 640px ----- */
+@media (max-width: 640px){
+
+  /* Desliga o truque do full-bleed no mobile para zerar qualquer subpixel */
+  .full-bleed{
+    width: 100%;
+    margin-inline: 0 !important;  /* força centralização */
+  }
+
+  /* Garante que cabeçalho e faixas não “passem” de 100% */
+  .header__wrap,
+  .topbar .container,
+  .logos-row,
+  .faq.container,
+  .hero__inner,
+  .card--form{
+    max-width: 100%;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  /* Hero: altura confortável e foco central ligeiramente acima */
+  .hero.hero--banner{
+    min-height: 320px;
+    background-position: var(--hero-focus, center 35%);
+  }
+
+  /* Forms e nav alinhados */
+  .form-actions{flex-direction: column-reverse; align-items: stretch}
+  .form-actions .btn{width: 100%}
+  .nav--simple{gap: 14px}
+}
+
+/* Micro-ajuste para a “quebra mágica” em 640px exatos */
+@media (width: 640px){
+  .container,
+  .header__wrap,
+  .faq.container,
+  .card--form{ padding-inline: 15px; } /* 1px a menos remove o subpixel de sobra */
+}
+
+
+/* ======= Prévia da Carteirinha ======= */
+.preview-wrap{
+  padding: 22px 0 28px;
+  position: relative;
+}
+
+.preview-bg{
+    height: 360px;
+    margin-top: -50px;
+}
+
+.preview-card{
+  width: min(520px, 92vw);
+  margin: -300px auto 0;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.25);
+  position: relative;
+}
+
+.preview-card__head{
+  height: 42px;
+  background: #f4a9df;            /* rosa superior */
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.preview-card__inner{
+  padding: 18px 18px 22px;
+  color: #3a173f;
+}
+
+.preview-title{
+  text-align:center;
+  font-weight:800;
+  letter-spacing:.02em;
+  margin: 6px 0 14px;
+}
+
+.preview-photo{
+  width: 170px; height: 170px;
+  border: 1.5px solid #6b3a7a;
+  margin: 0 auto 12px; display:grid; place-items:center;
+}
+.preview-photo img{width: 170px; height: 202px; object-fit: cover; display: block; object-position: center;}
+.preview-photo .ph{color:#6b3a7a; font-weight:700}
+
+.preview-label{color:#8a8397; text-align:center; font-size:14px; margin-top: 42px;margin-bottom: -10px;}
+.preview-name{
+  text-align:center; font-size:22px; font-weight:800; margin-top:4px;
+  color:#3a173f;
+}
+
+.preview-cols{
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+  margin: 12px 0 4px;
+}
+.preview-label-sm{color:#8a8397; font-size:12px}
+.preview-val{color:#3a173f; font-weight:800; font-size:16px}
+
+.preview-qr{display:flex; gap:16px; align-items:center; margin:10px 0 8px}
+.preview-qr img{width:110px; height:110px}
+.preview-qr-text{color:#6b6276; font-size:13px; line-height:1.25}
+
+.preview-legal{
+  text-align:center; color:#6b6276; font-size:12.5px; margin: 10px 0 8px;
+}
+
+.preview-logos{
+  display:flex; justify-content:center; align-items:center; gap:18px;
+  margin-top: 4px;
+}
+.preview-logos img{height:36px; display:block}
+
+.preview-actions{
+  display:flex; justify-content:center; margin-top: 22px;
+}
+
+/* Mobile */
+@media (max-width:560px){
+  .preview-card{width: 94vw}
+  .preview-cols{grid-template-columns:1fr}
+  .preview-qr{align-items:flex-start}
+}
+
+/* ===== Minhas Solicitações ===== */
+.page-title{margin:16px 0 10px}
+
+.sol-list{display:grid; gap:14px; margin-bottom:36px}
+.sol-card{
+  background: #fff;
+  border:1px solid #ece8f1;
+  border-radius:14px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.06);
+  padding:14px 16px;
+}
+.sol-card__head{
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
+}
+.sol-id{font-weight:700; color:#2a2334}
+.sol-meta{color:#6c6c73; display:flex; align-items:center; gap:8px}
+.sol-status{font-weight:600}
+.sol-dot{opacity:.5}
+.sol-date{font-variant-numeric: tabular-nums}
+
+.sol-actions{display:flex; gap:10px; margin:10px 0 6px; flex-wrap:wrap}
+
+.sol-preview{
+  border-top:1px solid #f0edf5; margin-top:8px; padding-top:10px;
+}
+.sol-preview > summary{
+  cursor:pointer; user-select:none; color:#6c6c73;
+  font-weight:600; padding:6px 0; list-style:none;
+}
+.sol-preview > summary::-webkit-details-marker{display:none}
+.sol-preview[open] > summary{color:#2a2334}
+
+.preview-embed{
+  margin-top:10px;
+  border:1px solid #ece8f1; border-radius:12px; overflow:hidden;
+  background:#faf9fc;
+}
+/* iframe responsivo (aspect-ratio do cartão + ações) */
+.preview-embed iframe{
+  display:block; width:100%; height:550px; border:0;
+}
+
+/* vazio */
+.empty{
+  background:#fff; border:1px dashed #e0dcea; border-radius:12px;
+  padding:18px; text-align:center;
+}
+.empty p{margin:0 0 10px}
+
+.btn--disabled {
+  color:#aaa !important; background:#f4f4f6 !important; border:1px solid #e9e7ef;
+  pointer-events:none; box-shadow:none; cursor:not-allowed;
+}
+
+
+/* nav simples: sempre lado a lado, com redução suave da fonte */
+.nav--simple{
+  display:flex; align-items:center; gap:18px;
+  flex-wrap:nowrap; white-space:nowrap;
+}
+.nav__link{
+  text-decoration:none;
+  color:#6d6a74;
+  padding:8px 2px;
+  border-bottom:2px solid transparent;
+  font-weight:600;
+  font-size: clamp(13px, 1.8vw, 16px); /* encolhe suavemente em telas menores */
+}
+.nav__link:hover{ color:#2a2334 }
+.nav__link.is-active{
+  color:#2a2334;
+  border-bottom-color:#d4cfe0; /* linha fina de destaque */
+}
+
+/* quando a tela fica bem estreita, só reduz o espaçamento */
+@media (max-width: 420px){
+  .nav--simple{ gap:12px }
+}

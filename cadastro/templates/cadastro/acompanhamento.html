@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Minhas Solicitações{% endblock %}
+
+{% block content %}
+<section class="container">
+  <h2 class="page-title">Minhas Solicitações</h2>
+
+  {% if solicitacoes %}
+    <div class="sol-list">
+      {% for s in solicitacoes %}
+      <article class="sol-card">
+        <header class="sol-card__head">
+          <div class="sol-id">Solicitação #{{ s.id }}</div>
+          <div class="sol-meta">
+            <span class="sol-status">{{ s.get_status_display }}</span>
+            <span class="sol-dot">•</span>
+            <span class="sol-date">{{ s.criado_em|date:"d/m/Y H:i" }}</span>
+          </div>
+        </header>
+
+        <div class="sol-actions">
+          {% if s.status == s.EMITIDA %}
+            <a class="btn btn--outline btn--sm" href="{% url 'cadastro:previa' s.id %}" target="_blank" rel="noopener">
+              abrir carteirinha online
+            </a>
+            <a class="btn btn--primary btn--sm" href="{% url 'cadastro:emitir' s.id %}">
+              baixar carteirinha (PDF)
+            </a>
+          {% else %}
+            <span class="btn btn--sm btn--disabled" aria-disabled="true" title="Disponível após emissão">
+              carteirinha online indisponível 
+            </span>
+          {% endif %}
+        </div>
+
+
+        <!-- Prévia embutida como "carteira digital online" -->
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <p>Você ainda não possui solicitações.</p>
+      <a class="btn btn--primary" href="{% url 'cadastro:registro' %}">fazer um novo cadastro</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

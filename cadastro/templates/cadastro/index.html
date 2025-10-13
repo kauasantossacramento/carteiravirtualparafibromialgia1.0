@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cadastre-se e garanta sua Carteira!{% endblock %}
+
+{% block content %}
+<section
+  class="hero hero--banner full-bleed"
+  style="--hero:url('{% static 'img/hero-valenca.jpg' %}'); --hero-focus: center 35%;"
+>
+  <div class="hero__inner">
+    <div class="hero__badge">
+      <span class="hero__icon">👤📝</span>
+      <span>Cadastro Inclusivo • Carteirinha de Prioridade</span>
+    </div>
+
+    <h1 class="hero__title">
+      Cadastre-se e garanta sua <strong>Carteira de Identificação de Fibromialgia!</strong>
+    </h1>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary btn--lg" href="{% url 'cadastro:registro' %}" style="text-decoration: none;">➕ cadastre-se!</a>
+      <a class="btn btn--outline btn--lg" href="{% url 'cadastro:login' %}" style="text-decoration: none;">🔎 acompanhar</a>
+    </div>
+  </div>
+</section>
+
+
+<section class="faq">
+  <div class="faq__item">
+    <div class="faq__header">
+      <span class="chip">O que é a <strong>Carteira</strong>?</span>
+    </div>
+    <p class="faq__text">
+      É um <strong>documento oficial</strong> que identifica o paciente com fibromialgia, garantindo
+      <strong>prioridade</strong> e acesso aos direitos já reconhecidos por lei.
+    </p>
+  </div>
+
+  <div class="faq__item">
+    <div class="faq__header">
+      <span class="chip">Quem pode <strong>solicitar</strong>?</span>
+    </div>
+    <p class="faq__text">
+      Qualquer cidadão <strong>diagnosticado</strong> com fibromialgia, mediante apresentação de
+      <strong>laudo médico com CID-10</strong>.
+    </p>
+  </div>
+
+  <div class="faq__item">
+    <div class="faq__header">
+      <span class="chip">Como funciona o <strong>cadastro</strong>?</span>
+    </div>
+    <p class="faq__text">
+      O paciente preenche seus dados, anexa os documentos obrigatórios e envia pelo portal.
+      A solicitação passa por <strong>análise da Secretaria de Saúde</strong> e, se aprovada,
+      <strong>gera a carteira</strong>.
+    </p>
+  </div>
+
+  <div class="faq__item faq__cta">
+    <span class="plus">+</span>
+    <span>Tem mais <strong>dúvidas</strong>?</span>
+  </div>
+</section>
+{% endblock %}
