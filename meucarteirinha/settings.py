@@ -5,7 +5,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "troque-por-uma-chave-segura"
 DEBUG = True
-ALLOWED_HOSTS = ["192.168.68.110", "*"]
+ALLOWED_HOSTS = ["carteirinhadigitalvalenca.pythonanywhere.com"]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "carteirinhadigitalvalenca.pythonanywhere.com",
+]
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -19,6 +25,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -26,6 +33,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 ROOT_URLCONF = "meucarteirinha.urls"
 
@@ -66,15 +76,16 @@ TIME_ZONE = "America/Bahia"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "cadastro" / "static"]
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")   # pasta coletada
+# Se você já tem 'cadastro/static', mantenha também:
+STATICFILES_DIRS = [ os.path.join(BASE_DIR, "cadastro", "static") ]
 
+# Media
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # usuário customizado
 AUTH_USER_MODEL = "cadastro.Usuario"
