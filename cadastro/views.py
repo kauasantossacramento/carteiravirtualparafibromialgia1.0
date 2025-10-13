@@ -18,31 +18,101 @@ def index(request):
     return render(request, "cadastro/index.html")
 
 
+# views.py
+import re
+from django.views import View
+from django.db import transaction
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, get_user_model
+
+from .forms import RegistroForm
+from .models import Solicitacao, HistoricoStatus, Documento
+
+User = get_user_model()
+
+def _only_digits(s: str) -> str:
+    return re.sub(r"\D", "", s or "")
+
 class RegistroView(View):
     def get(self, request):
         if request.user.is_authenticated:
             return redirect("cadastro:acompanhamento")
         return render(request, "cadastro/registro.html", {"form": RegistroForm()})
 
+    @transaction.atomic
     def post(self, request):
         form = RegistroForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request, "cadastro/registro.html", {"form": form})
 
-        user = form.save()
-        # cria solicitação vinculada
+        # --- cria/atualiza usuário a partir do form, garantindo CPF limpo e senha setada ---
+        # se seu RegistroForm é ModelForm de Usuario, usamos commit=False para ajustar campos
+        user = form.save(commit=False)
+
+        # normaliza CPF (sem máscara)
+        if hasattr(user, "cpf"):
+            user.cpf = _only_digits(user.cpf)
+
+        # pega a senha do form e garante set_password (caso o form não faça isso)
+        raw_password = (
+            form.cleaned_data.get("password1")
+            or form.cleaned_data.get("password")
+            or None
+        )
+        if raw_password:
+            user.set_password(raw_password)
+
+        # garante username (se estiver vazio, usa o CPF como username)
+        if not getattr(user, "username", ""):
+            user.username = user.cpf or user.username
+
+        user.save()
+        # se o form tinha M2M, salve agora
+        if hasattr(form, "save_m2m"):
+            form.save_m2m()
+
+        # --- cria solicitação vinculada (igual ao seu código) ---
         sol = Solicitacao.objects.create(usuario=user)
-        HistoricoStatus.objects.create(solicitacao=sol, status=sol.status, alterado_por=None,
-                                       observacao="Solicitação criada pelo usuário.")
+        HistoricoStatus.objects.create(
+            solicitacao=sol,
+            status=sol.status,
+            alterado_por=None,
+            observacao="Solicitação criada pelo usuário.",
+        )
 
-        # grava documentos
-        Documento.objects.create(solicitacao=sol, tipo=Documento.RG_FRENTE, arquivo=request.FILES["rg_frente"])
-        Documento.objects.create(solicitacao=sol, tipo=Documento.RG_VERSO, arquivo=request.FILES["rg_verso"])
-        Documento.objects.create(solicitacao=sol, tipo=Documento.LAUDO, arquivo=request.FILES["laudo"])
-        Documento.objects.create(solicitacao=sol, tipo=Documento.FOTO, arquivo=request.FILES["foto"])
+        # --- grava documentos (igual ao seu código; só checa existência) ---
+        files_map = [
+            ("rg_frente", Documento.RG_FRENTE),
+            ("rg_verso",  Documento.RG_VERSO),
+            ("laudo",     Documento.LAUDO),
+            ("foto",      Documento.FOTO),
+        ]
+        for field_name, tipo in files_map:
+            f = request.FILES.get(field_name)
+            if f:
+                Documento.objects.create(solicitacao=sol, tipo=tipo, arquivo=f)
 
-        # loga e redireciona para acompanhamento
-        login(request, user)
+        # --- autentica e faz login com backend definido (evita ValueError com múltiplos backends) ---
+        auth_user = None
+        if raw_password:
+            # tenta autenticar por username e, se falhar, por CPF
+            auth_user = authenticate(request, username=user.username, password=raw_password)
+            if not auth_user and user.cpf:
+                auth_user = authenticate(request, username=user.cpf, password=raw_password)
+
+        if auth_user is not None:
+            login(request, auth_user)  # já vem com atributo backend
+        else:
+            # fallback: se por algum motivo não autenticou (ex.: sem senha no form),
+            # loga explicitando o backend custom de CPF/username
+            try:
+                login(request, user, backend="cadastro.backends.CPFOrUsernameBackend")
+            except Exception:
+                messages.info(request, "Cadastro criado. Faça login para continuar.")
+                return redirect("cadastro:login")
+
+        messages.success(request, "Cadastro realizado com sucesso!")
         return redirect("cadastro:acompanhamento")
 
 
