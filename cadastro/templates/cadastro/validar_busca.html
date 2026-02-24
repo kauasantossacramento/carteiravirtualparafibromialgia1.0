@@ -1,38 +1,194 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Validar Carteirinha{% endblock %}
+{% block title %}Validar Carteira{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Centraliza o card na tela verticalmente se a página for alta */
+    .validate-section {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .validate-search-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08); /* Sombra suave idêntica à anterior */
+        overflow: hidden;
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid #f0f0f0;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    /* Ícone de Lupa no Topo */
+    .icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background: #fdf2fb; /* Roxo bem clarinho */
+        color: #3a173f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 25px;
+    }
+
+    .card-title-lg {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .card-subtitle {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 30px;
+    }
+
+    /* Estilização do Input de Código */
+    .code-input-group {
+        position: relative;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .code-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #3a173f;
+        margin-bottom: 8px;
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .custom-input {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.2rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        transition: all 0.3s;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace; /* Fonte mono para diferenciar 0 de O */
+        letter-spacing: 3px;
+        font-weight: bold;
+        color: #333;
+        text-transform: uppercase; /* Visualmente maiúsculo */
+    }
+
+    .custom-input:focus {
+        border-color: #3a173f;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(58, 23, 63, 0.1);
+    }
+
+    .custom-input::placeholder {
+        color: #ccc;
+        font-family: sans-serif; /* Placeholder com fonte normal */
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+
+    /* Botões */
+    .btn-validate {
+        background-color: #3a173f;
+        color: white;
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s, background 0.2s;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-validate:hover {
+        background-color: #53215a;
+        transform: translateY(-2px);
+    }
+
+    .btn-back {
+        color: #666;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+        display: inline-block;
+        padding: 5px;
+    }
+    .btn-back:hover {
+        color: #3a173f;
+        text-decoration: underline;
+    }
+
+    .helper-text {
+        font-size: 0.8rem;
+        color: #888;
+        margin-top: 8px;
+        display: block;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<section class="container">
-  <div class="card card--form">
-    <div class="card__header">
-      <div class="hero__badge">
-        <span class="hero__icon">🔎</span>
-        <span>Validar Carteirinha</span>
-      </div>
-      <h2 class="card__title">Digite o código da carteirinha</h2>
-      <p class="card__subtitle">
-        Você encontra o código logo abaixo do QR Code na carteirinha impressa/digital.
-      </p>
+<section class="container validate-section">
+
+  <div class="validate-search-card">
+
+    <div class="icon-wrapper">
+        🔍
     </div>
 
-    <form method="get" action="{% url 'cadastro:validar_index' %}" class="form-inline" novalidate>
-      <div class="field">
-        <label for="codigo">Código</label>
-        <input id="codigo" name="codigo" type="text" required
-               placeholder="Ex.: D8CB6011E3CC4E9E"
-               pattern="[A-Za-z0-9\-]{6,}"
-               inputmode="latin"
-               autocomplete="off" />
-        <small class="help">Aceita letras e números (sem espaços).</small>
+    <h1 class="card-title-lg">Validar Carteira</h1>
+    <p class="card-subtitle">
+        Para verificar a autenticidade de um documento, digite o código alfanumérico localizado logo abaixo do QR Code.
+    </p>
+
+    <form method="get" action="{% url 'cadastro:validar_index' %}" novalidate>
+
+      <div class="code-input-group">
+        <label for="codigo" class="code-label">Código de Verificação</label>
+
+        <input
+            id="codigo"
+            name="codigo"
+            type="text"
+            required
+            placeholder="Ex: F568S858"
+            class="custom-input"
+            autocomplete="off"
+            maxlength="20"
+            oninput="this.value = this.value.toUpperCase()"
+        />
+        <small class="helper-text">Digite apenas letras e números, sem espaços.</small>
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn--primary btn--lg">Validar</button>
-        <a class="btn btn--outline" href="{% url 'cadastro:index' %}">Voltar ao início</a>
+        <button type="submit" class="btn-validate">
+            Conferir Documento ➔
+        </button>
+
+        <a class="btn-back" href="{% url 'cadastro:index' %}">
+            ← Voltar para o início
+        </a>
       </div>
+
     </form>
   </div>
+
 </section>
 {% endblock %}

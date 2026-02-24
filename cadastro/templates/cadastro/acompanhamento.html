@@ -3,48 +3,560 @@
 
 {% block title %}Minhas Solicitações{% endblock %}
 
+{% block head_extra %}
+<style>
+  /* --- Estilos da Página de Acompanhamento --- */
+
+  /* Estilos Locais para Lista Compacta */
+  .compact-upload-list {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      overflow: hidden; /* Arredonda cantos internos */
+      margin-top: -10px; /* Ajustado levemente para não colar demais no título */
+  }
+
+  .compact-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+      gap: 15px; /* Garante espaço mínimo entre texto e botão no desktop */
+  }
+
+  .compact-item:last-child {
+      border-bottom: none;
+  }
+
+  .compact-item:hover {
+      background-color: #fcfcfc;
+  }
+
+  .doc-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+      flex: 1; /* Ocupa o espaço disponível à esquerda */
+      min-width: 0; /* Permite que o texto trunque se necessário */
+  }
+
+  .doc-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #333;
+      white-space: nowrap; /* Evita quebra feia no desktop */
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+
+  .doc-reason {
+      font-size: 0.75rem;
+      color: #dc3545; /* Vermelho erro */
+      margin-top: 2px;
+      white-space: normal; /* Permite que o motivo quebre linha */
+  }
+
+  /* Botão de Upload Customizado */
+  .btn-upload-custom {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: 1px solid #3a173f;
+      color: #3a173f;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      transition: all 0.2s;
+      max-width: 200px; 
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 0; /* Impede que o botão seja esmagado */
+  }
+
+  .btn-upload-custom:hover {
+      background: #fdf2fb;
+  }
+
+  /* Estado quando arquivo selecionado */
+  .btn-upload-custom.has-file {
+      background-color: #27ae60;
+      border-color: #27ae60;
+      color: white;
+  }
+
+  /* Esconde o input real */
+  .hidden-input {
+      display: none;
+  }
+
+  /* CABEÇALHO FLEXÍVEL */
+  .page-header-flex {
+      display: flex;
+      justify-content: space-between; 
+      align-items: center; 
+      flex-wrap: wrap; 
+      gap: 15px;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e0e0e0;
+  }
+
+  /* Título */
+  .page-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      color: #3a173f;
+      font-size: 1.8rem;
+      margin: 0; 
+      line-height: 1.2;
+  }
+
+  /* Saudação Estilizada */
+  .welcome-msg {
+      font-size: 0.95rem;
+      color: #555;
+      background-color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 50px;
+      border: 1px solid #eee;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+  }
+  .welcome-msg strong {
+      color: #3a173f;
+  }
+
+  /* --- Alerta de Rejeição --- */
+  .alert-rejection {
+      background-color: #fff5f5;
+      border: 1px solid #fed7d7;
+      border-left: 4px solid #c53030;
+      color: #2d3748;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+  }
+  .alert-rejection strong {
+      color: #c53030;
+      display: block;
+      margin-bottom: 5px;
+  }
+
+  /* --- CARD DA SOLICITAÇÃO --- */
+  .sol-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(58, 23, 63, 0.05);
+      border: 1px solid #f0f0f0;
+      padding: 25px;
+      margin-bottom: 25px;
+      transition: transform 0.2s;
+  }
+  .sol-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(58, 23, 63, 0.08);
+  }
+
+  .sol-card__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed #eee;
+  }
+
+  .sol-id {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #3a173f;
+  }
+
+  .sol-meta {
+      font-size: 0.9rem;
+      color: #777;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+  }
+
+  .sol-dot { color: #ccc; }
+
+  /* Badge de Status */
+  .badge {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+  }
+  .bg-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .bg-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .bg-secondary { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+
+  /* --- LINHA DO TEMPO (TIMELINE) --- */
+  .timeline {
+      margin-top: 25px;
+      padding-top: 10px;
+  }
+  .timeline-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: #999;
+      font-weight: 700;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+  }
+
+  .timeline-item {
+      display: flex;
+      gap: 15px;
+      padding-bottom: 25px;
+      position: relative;
+  }
+  .timeline-item:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 20px;
+      bottom: 0;
+      width: 2px;
+      background: #e9ecef;
+  }
+
+  .timeline-marker {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid #cbd5e0;
+      flex-shrink: 0;
+      margin-top: 5px;
+      z-index: 1;
+  }
+
+  .timeline-item:first-child .timeline-marker {
+      border-color: #3a173f;
+      background: #3a173f;
+      box-shadow: 0 0 0 3px rgba(58, 23, 63, 0.1);
+  }
+
+  .timeline-content { flex: 1; }
+
+  .timeline-status {
+      font-weight: 700;
+      color: #333;
+      font-size: 0.95rem;
+  }
+
+  .timeline-date {
+      font-size: 0.8rem;
+      color: #888;
+      display: block;
+      margin-bottom: 4px;
+  }
+
+  .timeline-obs {
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: 8px;
+      color: #555;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      border-left: 3px solid #ddd;
+      font-style: italic;
+  }
+
+  /* Botões */
+  .sol-actions { margin: 15px 0; }
+  .btn--primary {
+      background-color: #3a173f;
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.2s;
+  }
+  .btn--primary:hover { background-color: #5a2a60; color: white; }
+
+  .btn--disabled {
+      background: #eee;
+      color: #999;
+      cursor: not-allowed;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      display: inline-block;
+  }
+
+  .empty {
+      text-align: center;
+      padding: 50px 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+  .empty p { color: #777; margin-bottom: 20px; font-size: 1.1rem; }
+
+  /* --- MEDIA QUERIES (Melhorias de Responsividade) --- */
+  @media(max-width: 600px) {
+      .page-header-flex { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .welcome-msg { width: 100%; justify-content: center; }
+      .sol-card__head { flex-direction: column; align-items: flex-start; gap: 10px; }
+      
+      /* Ajuste específico para a lista de upload compacta no mobile */
+      .compact-item {
+          flex-direction: column; /* Empilha texto e botão */
+          align-items: flex-start; /* Alinha tudo à esquerda inicialmente */
+          gap: 12px;
+      }
+      
+      .doc-info {
+          width: 100%;
+      }
+      
+      .doc-title {
+          white-space: normal; /* Permite que o título quebre linha se for longo */
+      }
+
+      /* Container do botão no mobile */
+      .compact-item > div:last-child {
+          width: 100%;
+          display: flex;
+          justify-content: flex-end; /* Alinha o botão à DIREITA */
+      }
+
+      .btn-upload-custom {
+          width: auto; /* Deixa o botão crescer se necessário */
+          justify-content: center;
+      }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="container">
-  <h2 class="page-title">Minhas Solicitações</h2>
+<section class="container" style="max-width: 900px;">
+
+  <div class="page-header-flex">
+      <h2 class="page-title">Minhas Solicitações</h2>
+
+      <div class="welcome-msg">
+          <span>Olá, <strong>{{ user.first_name|default:user.username }} :)</strong>!</span>
+      </div>
+  </div>
 
   {% if solicitacoes %}
     <div class="sol-list">
       {% for s in solicitacoes %}
       <article class="sol-card">
+
         <header class="sol-card__head">
           <div class="sol-id">Solicitação #{{ s.id }}</div>
+
           <div class="sol-meta">
-            <span class="sol-status">{{ s.get_status_display }}</span>
+            <span class="sol-status badge
+                {% if s.status == 'emitida' %}bg-success
+                {% elif s.status == 'rejeitada' %}bg-danger
+                {% else %}bg-secondary{% endif %}">
+                {{ s.get_status_display }}
+            </span>
             <span class="sol-dot">•</span>
-            <span class="sol-date">{{ s.criado_em|date:"d/m/Y H:i" }}</span>
+            <span class="sol-date">{{ s.criado_em|date:"d/m/Y - H:i" }}</span>
           </div>
         </header>
 
+
+        {% if s.status == 'rejeitada' %}
+        <div class="alert-rejection">
+            <strong>⚠️ Solicitação com Pendências</strong>
+
+            <p class="mb-3">
+                Por favor, leia atentamente o problema relatado pelo avaliador abaixo. 
+                Em caso de dúvidas sobre como proceder, entre em contato com a <b>Secretaria de Saúde do Município</b>.
+            </p>
+
+            {% with ultima_obs=s.historico.first %}
+                {% if ultima_obs.observacao %}
+                <div class="timeline-obs mb-3" style="background: #fff; border-left: 4px solid #c53030; color: #2d3748;">
+                    "{{ ultima_obs.observacao }}"
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            {% if s.pendencia_rg_frente or s.pendencia_rg_verso or s.pendencia_laudo or s.pendencia_foto %}
+            
+                <div class="mt-3">
+                <div class="d-flex align-items-center mb-3">
+                    <h6 class="fw-bold mb-0 text-dark text-uppercase" style="font-size: 0.9rem;">
+                        Documentos para Correção
+                    </h6>
+                </div>
+                
+                <form action="{% url 'cadastro:re_upload' s.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="compact-upload-list shadow-sm">
+
+                        {% if s.pendencia_rg_frente %}
+                        <div class="compact-item">
+                            <div class="doc-info">
+                                <span class="doc-title">RG (Frente)</span>
+                                <span class="doc-reason"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ s.get_motivo_rg_frente_display }}</span>
+                            </div>
+                            <div>
+                                <label class="btn-upload-custom" id="lbl_rg_frente">
+                                    <i class="bi bi-upload"></i> <span>Selecionar</span>
+                                    <input type="file" name="rg_frente" class="hidden-input" onchange="updateFileLabel(this, 'lbl_rg_frente')" required>
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if s.pendencia_rg_verso %}
+                        <div class="compact-item">
+                            <div class="doc-info">
+                                <span class="doc-title">RG (Verso)</span>
+                                <span class="doc-reason"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ s.get_motivo_rg_verso_display }}</span>
+                            </div>
+                            <div>
+                                <label class="btn-upload-custom" id="lbl_rg_verso">
+                                    <i class="bi bi-upload"></i> <span>Selecionar</span>
+                                    <input type="file" name="rg_verso" class="hidden-input" onchange="updateFileLabel(this, 'lbl_rg_verso')" required>
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if s.pendencia_laudo %}
+                        <div class="compact-item">
+                            <div class="doc-info">
+                                <span class="doc-title">Laudo Médico</span>
+                                <span class="doc-reason"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ s.get_motivo_laudo_display }}</span>
+                            </div>
+                            <div>
+                                <label class="btn-upload-custom" id="lbl_laudo">
+                                    <i class="bi bi-upload"></i> <span>Selecionar</span>
+                                    <input type="file" name="laudo" class="hidden-input" onchange="updateFileLabel(this, 'lbl_laudo')" required>
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if s.pendencia_foto %}
+                        <div class="compact-item">
+                            <div class="doc-info">
+                                <span class="doc-title">Foto 3x4</span>
+                                <span class="doc-reason"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ s.get_motivo_foto_display }}</span>
+                            </div>
+                            <div>
+                                <label class="btn-upload-custom" id="lbl_foto">
+                                    <i class="bi bi-upload"></i> <span>Selecionar</span>
+                                    <input type="file" name="foto" class="hidden-input" onchange="updateFileLabel(this, 'lbl_foto')" required>
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary rounded-pill w-100 py-2 shadow-sm fw-bold mt-3" 
+                            style="background-color: #3a173f; color: white; margin-top: 7px; border: none; transition: transform 0.2s;">
+                        <i class="bi bi-send-check me-2"></i> Enviar Correções
+                    </button>
+                </form>
+            </div>
+
+            {% endif %}
+
+        </div>
+        {% endif %}
+
+
+
         <div class="sol-actions">
           {% if s.status == s.EMITIDA %}
-            <a class="btn btn--outline btn--sm" href="{% url 'cadastro:previa' s.id %}" target="_blank" rel="noopener">
-              abrir carteirinha online
-            </a>
-            <a class="btn btn--primary btn--sm" href="{% url 'cadastro:emitir' s.id %}">
-              baixar carteirinha (PDF)
+            <a class="btn btn--primary" href="{% url 'cadastro:previa' s.id %}" target="_blank" rel="noopener">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16" style="margin-right: 8px;">
+                <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499L12.136.326zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484L5.562 3zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
+              </svg>
+              Abrir Carteira Online
             </a>
           {% else %}
-            <span class="btn btn--sm btn--disabled" aria-disabled="true" title="Disponível após emissão">
-              carteirinha online indisponível 
-            </span>
+              {% if s.status != 'rejeitada' %}
+                <span class="btn--disabled" aria-disabled="true" title="Aguarde a análise">
+                  ⏳ Aguardando Emissão
+                </span>
+              {% endif %}
           {% endif %}
         </div>
 
+        {% if s.historico.exists %}
+        <div class="timeline">
+            <div class="timeline-title">Histórico de Atualizações</div>
 
-        <!-- Prévia embutida como "carteira digital online" -->
+            {% for h in s.historico.all %}
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-status">{{ h.get_status_display }}</div>
+                    <span class="timeline-date">{{ h.alterado_em|date:"d/m/Y - H:i" }}</span>
+                    
+                    {% if h.observacao %}
+                    <div class="timeline-obs">
+                        "{{ h.observacao }}"
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
       </article>
       {% endfor %}
     </div>
   {% else %}
     <div class="empty">
       <p>Você ainda não possui solicitações.</p>
-      <a class="btn btn--primary" href="{% url 'cadastro:registro' %}">fazer um novo cadastro</a>
+      <a class="btn btn--primary" href="{% url 'cadastro:registro' %}">Fazer Novo Cadastro</a>
     </div>
   {% endif %}
 </section>
+
+<script>
+    function updateFileLabel(input, labelId) {
+        const label = document.getElementById(labelId);
+        const span = label.querySelector('span');
+        const icon = label.querySelector('i');
+
+        if (input.files && input.files[0]) {
+            // Arquivo selecionado
+            span.textContent = input.files[0].name; // Mostra o nome do arquivo
+            label.classList.add('has-file'); // Muda para verde
+            icon.classList.remove('bi-upload');
+            icon.classList.add('bi-check-lg');
+        } else {
+            // Cancelou seleção
+            span.textContent = "Selecionar";
+            label.classList.remove('has-file');
+            icon.classList.remove('bi-check-lg');
+            icon.classList.add('bi-upload');
+        }
+    }
+</script>
+
 {% endblock %}

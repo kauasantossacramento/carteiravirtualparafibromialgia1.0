@@ -4,12 +4,12 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "troque-por-uma-chave-segura"
-DEBUG = True
-ALLOWED_HOSTS = ["carteirinhadigitalvalenca.pythonanywhere.com"]
+DEBUG = False
+ALLOWED_HOSTS = ["www.valenca.carteiravirtual.com.br", "valenca.carteiravirtual.com.br"]
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://carteirinhadigitalvalenca.pythonanywhere.com",
+    "https://www.valenca.carteiravirtual.com.br/",
 ]
 
 
@@ -22,6 +22,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "cadastro",
 ]
+
+# 15 minutos em segundos
+SESSION_COOKIE_AGE = 900
+
+# Faz com que a sessão seja salva (e o tempo renovado) a cada requisição
+SESSION_SAVE_EVERY_REQUEST = True
+
+# Opcional: faz a sessão expirar ao fechar o navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

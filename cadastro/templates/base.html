@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   {% block head_extra %}{% endblock %}
 </head>
@@ -39,10 +38,17 @@
       <a class="nav__link {% if current == 'registro' %}is-active{% endif %}"
          href="{% url 'cadastro:registro' %}">cadastre-se</a>
 
-      {% if user.is_authenticated %}
-        <a class="nav__link {% if current == 'acompanhamento' %}is-active{% endif %}"
-           href="{% url 'cadastro:acompanhamento' %}">acompanhar</a>
+        {% if user.is_authenticated %}
+
+        {% if user.is_staff %}
+            <a class="nav__link" href="{% url 'cadastro:admin_dashboard' %}">gestão</a>
+        {% else %}
+            <a class="nav__link {% if current == 'acompanhamento' %}is-active{% endif %}"
+               href="{% url 'cadastro:acompanhamento' %}">acompanhar</a>
+        {% endif %}
+
         <a class="nav__link" href="{% url 'cadastro:logout' %}">sair</a>
+
       {% else %}
         <a class="nav__link {% if current == 'login' %}is-active{% endif %}"
            href="{% url 'cadastro:login' %}">acompanhar</a>
@@ -68,6 +74,8 @@
       <p class="footer__text">Cadastro Municipal da Fibromialgia • Carteira de Identificação da Pessoa com Fibromialgia</p>
     </div>
   </footer>
+
+
 
   {% block body_extra %}{% endblock %}
 </body>

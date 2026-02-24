@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Painel Administrativo{% endblock %}
+
+{% block head_extra %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* --- VARIÁVEIS DE COR --- */
+    :root {
+        --primary-color: #3a173f;
+        --primary-light: #f3e5f5;
+        --success-color: #27ae60;
+        --success-bg: #e8f5e9;
+        --warning-color: #e67e22;
+        --warning-bg: #fff3e0;
+        --danger-color: #c0392b;
+        --danger-bg: #fbe9e7;
+        --card-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        --hover-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+
+    body { background-color: #f8f9fa; }
+
+    /* --- TOPBAR CUSTOMIZADA --- */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 4px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .welcome-text h2 {
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+        font-size: 1.75rem;
+    }
+    .welcome-text p {
+        color: #7f8c8d;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    /* --- KPI CARDS (MODERNOS) --- */
+    .kpi-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        height: 100%;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0,0,0,0.02);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none; /* Remove sublinhado do link */
+    }
+    
+    /* Efeito de Hover */
+    .kpi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--hover-shadow);
+    }
+
+    /* Ícones Circulares */
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+    }
+
+    /* Cores Específicas dos Cards */
+    .kpi-success .icon-box { background: var(--success-bg); color: var(--success-color); }
+    .kpi-success .kpi-value { color: var(--success-color); }
+    
+    .kpi-warning .icon-box { background: var(--warning-bg); color: var(--warning-color); }
+    .kpi-warning .kpi-value { color: var(--warning-color); }
+    
+    .kpi-danger .icon-box { background: var(--danger-bg); color: var(--danger-color); }
+    .kpi-danger .kpi-value { color: var(--danger-color); }
+
+    /* Textos do Card */
+    .kpi-info { flex-grow: 1; }
+    .kpi-label {
+        color: #95a5a6;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .kpi-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        line-height: 1;
+        display: block;
+    }
+    .kpi-link-arrow {
+        color: #ccc;
+        font-size: 1.2rem;
+        transition: 0.2s;
+    }
+    .kpi-card:hover .kpi-link-arrow {
+        color: var(--primary-color);
+        transform: translateX(3px);
+    }
+
+    /* --- ÁREA DO GRÁFICO --- */
+    .chart-section {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-top: 20px;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 15px;
+    }
+
+    .chart-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .chart-title::before {
+        content: '';
+        display: block;
+        width: 4px;
+        height: 20px;
+        background: var(--primary-color);
+        border-radius: 2px;
+    }
+
+    /* Filtros (Pills Modernos) */
+    .filter-group {
+        display: flex;
+        background: #f8f9fa;
+        padding: 4px;
+        border-radius: 30px;
+        gap: 5px;
+    }
+    .filter-btn {
+        border: none;
+        background: transparent;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #7f8c8d;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .filter-btn:hover { color: var(--primary-color); }
+    .filter-btn.active {
+        background: white;
+        color: var(--primary-color);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* Botão Imprimir */
+    .btn-print {
+        background: white;
+        border: 1px solid #e0e0e0;
+        color: #555;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+    .btn-print:hover {
+        background: #f8f9fa;
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    /* Canvas Responsivo */
+    .chart-wrapper {
+        position: relative;
+        height: 350px;
+        width: 100%;
+    }
+    #copy{
+        opacity: 0;
+        position: absolute;
+    }
+    /* Mobile */
+    @media (max-width: 768px) {
+        .chart-header { flex-direction: column; align-items: flex-start; }
+        .filter-group { width: 100%; justify-content: space-between; }
+        .filter-btn { flex: 1; text-align: center; padding: 8px 0; }
+        .chart-wrapper { height: 280px; }
+        .kpi-value { font-size: 1.8rem; }
+    }
+
+    /* Print Mode */
+    @media print {
+        header, .topbar, footer, .sidebar, .btn-print, .filter-group { display: none !important; }
+        body { background: white; }
+        .container { max-width: 100%; padding: 0; }
+        .kpi-card, .chart-section { box-shadow: none; border: 1px solid #ccc; }
+        #nome_user{ opacity: 0; position: absolute;}
+        #copy{opacity: 1; position: static;}
+        .bi-chevron-right{opacity: 0;}
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    
+    <div class="dashboard-header">
+        <div class="welcome-text">
+            <h2>Gestão de Carteiras de Fibromialgia</h2>
+            <p id="nome_user" style='margin-top: 3px;'>Olá, <strong>{{ user.get_full_name|default:user.username }}</strong>. Aqui está o resumo de hoje.</p>
+            <p id="copy">Relatório Gerado pelo Sistema CarteiraVirtual.com.br</p>
+        </div>
+        <a href="javascript:window.print()" class="btn-print no-print">
+            <i class="bi bi-printer"></i> Imprimir Relatório
+        </a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        
+        <div class="col-md-4">
+            <a href="{% url 'cadastro:admin_lista' 'emitidas' %}" class="kpi-card kpi-success">
+                <div class="icon-box">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Carteiras Emitidas</span>
+                    <span class="kpi-value">{{ total_emitidas }}</span>
+                </div>
+                <div class="kpi-link-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="{% url 'cadastro:admin_lista' 'analise' %}" class="kpi-card kpi-warning">
+                <div class="icon-box">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Pendentes de Análise</span>
+                    <span class="kpi-value">{{ total_analise }}</span>
+                </div>
+                <div class="kpi-link-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="{% url 'cadastro:admin_lista' 'pendencias' %}" class="kpi-card kpi-danger">
+                <div class="icon-box">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Pendentes de Emissão</span>
+                    <span class="kpi-value">{{ total_pendente_emissao }}</span>
+                </div>
+                <div class="kpi-link-arrow">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="chart-section">
+        <div class="chart-header">
+            <div class="chart-title">Evolução de Solicitações</div>
+            
+            <div class="filter-group no-print">
+                <a href="?dias=30" class="filter-btn {% if dias_filtro == '30' %}active{% endif %}">30 dias</a>
+                <a href="?dias=90" class="filter-btn {% if dias_filtro == '90' %}active{% endif %}">90 dias</a>
+                <a href="?dias=120" class="filter-btn {% if dias_filtro == '120' %}active{% endif %}">120 dias</a>
+            </div>
+        </div>
+        
+        <div class="chart-wrapper">
+            <canvas id="dailyChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('dailyChart').getContext('2d');
+        
+        // Gradiente Roxo para o gráfico
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(58, 23, 63, 0.8)'); // #3a173f
+        gradient.addColorStop(1, 'rgba(58, 23, 63, 0.2)');
+
+        const myChart = new Chart(ctx, {
+            type: 'bar', // ou 'line' para uma linha suave
+            data: {
+                labels: {{ labels_grafico|safe }},
+                datasets: [{
+                    label: 'Novas Solicitações',
+                    data: {{ dados_grafico|safe }},
+                    backgroundColor: gradient,
+                    borderRadius: 6, // Barras arredondadas
+                    barThickness: 'flex',
+                    maxBarThickness: 35,
+                    hoverBackgroundColor: '#53215a'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#3a173f',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        padding: 10,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { 
+                            color: '#f0f0f0',
+                            borderDash: [5, 5]
+                        },
+                        ticks: { precision: 0, font: {family: 'Poppins'} } 
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: {
+                            font: {family: 'Poppins'},
+                            maxTicksLimit: 10,
+                            autoSkip: true
+                        }
+                    }
+                },
+                layout: { padding: 0 }
+            }
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

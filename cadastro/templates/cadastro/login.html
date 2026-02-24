@@ -3,45 +3,228 @@
 
 {% block title %}Entrar · Carteira Fibromialgia{% endblock %}
 
+{% block head_extra %}
+<style>
+  /* --- DESIGN SYSTEM: CLEAN LOGIN --- */
+  
+  body.bg-page { background-color: #f8f9fa; }
+
+  /* Container Centralizado e Estreito */
+  .clean-card {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(58, 23, 63, 0.08); /* Sombra roxa suave */
+      border: none;
+      padding: 0;
+      overflow: hidden;
+      max-width: 450px; /* Mais estreito que o cadastro */
+      width: 100%;
+      margin: 60px auto;
+  }
+
+  /* Cabeçalho */
+  .clean-header {
+      padding: 40px 30px 10px;
+      text-align: center;
+      background: white;
+  }
+  
+  .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fdf2fb; /* Fundo roxo muito claro */
+      color: #3a173f;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+  }
+
+  .clean-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      color: #3a173f;
+      font-size: 1.7rem;
+      margin-bottom: 10px;
+  }
+  .clean-subtitle {
+      color: #6c757d;
+      font-size: 0.95rem;
+      line-height: 1.5;
+  }
+
+  /* Conteúdo do Formulário */
+  .form-content {
+      padding: 5px 40px 50px;
+  }
+
+  /* Estilo dos Inputs (Idêntico ao Cadastro) */
+  .field { margin-bottom: 20px; }
+  
+  .field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+  }
+  
+  .field input {
+      width: 100%;
+      padding: 14px 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px; /* Um pouco mais arredondado */
+      font-size: 1rem;
+      transition: all 0.2s;
+      background: #fdfdfd;
+      color: #333;
+  }
+  
+  .field input:focus {
+      border-color: #3a173f;
+      background: white;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(58, 23, 63, 0.05);
+  }
+
+  /* Erros */
+  .has-error input {
+      border-color: #dc3545;
+      background: #fff8f8;
+  }
+  .error-msg {
+      color: #dc3545;
+      font-size: 0.8rem;
+      margin-top: 5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+  }
+
+  /* Alerta Global de Erro (Login falhou) */
+  .form-alert {
+      background: #fff5f5;
+      border-left: 4px solid #dc3545;
+      color: #8a1f1f;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+
+  /* Botões e Links */
+  .btn-login {
+      background: #3a173f;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1rem;
+      width: 100%;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(58, 23, 63, 0.2);
+      margin-top: 10px;
+  }
+  
+  .btn-login:hover {
+      background: #53215a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(58, 23, 63, 0.25);
+  }
+
+  .register-link {
+      display: block;
+      text-align: center;
+      margin-top: 25px;
+      color: #666;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: color 0.2s;
+  }
+  .register-link strong {
+      color: #3a173f;
+      font-weight: 700;
+  }
+  .register-link:hover strong {
+      text-decoration: underline;
+  }
+
+  /* Responsivo */
+  @media(max-width: 500px) {
+      .clean-card { margin: 20px auto; border-radius: 20px; box-shadow: none; }
+      .form-content { padding: 20px; }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="container">
-  <div class="card card--form">
-    <div class="card__header">
+  
+  <div class="clean-card">
+    
+    <div class="clean-header">
       <div class="hero__badge">
         <span class="hero__icon">👤</span>
-        <span>Acesse sua conta</span>
+        <span>Acesso Restrito</span>
       </div>
-      <h2 class="card__title">Entrar</h2>
-      <p class="card__subtitle">Use seu CPF e senha para acompanhar sua solicitação.</p>
+      <h2 class="clean-title">Bem-vindo(a)!</h2>
+      <p class="clean-subtitle">Digite seu CPF e senha para acessar sua carteiria digital.</p>
     </div>
 
-    <form method="post" novalidate>
-      {% csrf_token %}
+    <div class="form-content">
+        <form method="post" novalidate>
+          {% csrf_token %}
 
-      {% if form.non_field_errors %}
-      <div class="form-alert">
-        {{ form.non_field_errors }}
-      </div>
-      {% endif %}
+          {% if form.non_field_errors %}
+          <div class="form-alert">
+            <span>⚠️</span>
+            <div>{{ form.non_field_errors.as_text }}</div>
+          </div>
+          {% endif %}
 
-      {% for field in form %}
-      <div class="field {% if field.errors %}has-error{% endif %}">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
-        {% if field.help_text %}
-        <small class="help">{{ field.help_text|safe }}</small>
-        {% endif %}
-        {% for err in field.errors %}
-          <div class="error">{{ err }}</div>
-        {% endfor %}
-      </div>
-      {% endfor %}
+          {% for field in form %}
+          <div class="field {% if field.errors %}has-error{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            
+            {% if field.help_text %}
+            <small style="color: #999; font-size: 0.8rem; display: block; margin-top: 4px;">
+                {{ field.help_text|safe }}
+            </small>
+            {% endif %}
+            
+            {% for err in field.errors %}
+              <div class="error-msg">{{ err }}</div>
+            {% endfor %}
+          </div>
+          {% endfor %}
 
-      <div class="form-actions">
-        <button type="submit" class="btn btn--primary btn--lg">Entrar</button>
-        <a class="link" href="{% url 'cadastro:registro' %}">não tenho cadastro</a>
-      </div>
-    </form>
+          <div class="form-actions">
+            <button type="submit" class="btn-login">Entrar no Sistema</button>
+            
+            <a class="register-link" href="{% url 'cadastro:registro' %}">
+                Ainda não tem conta? <strong>Cadastre-se aqui</strong>
+            </a>
+          </div>
+        </form>
+    </div>
+
   </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Tenta focar no campo de usuário/CPF ao carregar
+        const firstInput = document.querySelector('.field input');
+        if(firstInput) firstInput.focus();
+    });
+</script>
 {% endblock %}

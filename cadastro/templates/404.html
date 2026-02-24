@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Página Não Encontrada{% endblock %}
+
+{% block head_extra %}
+<style>
+    .error-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .error-code {
+        font-size: 6rem;
+        font-weight: 900;
+        color: #3a173f; /* Roxo da identidade */
+        line-height: 1;
+        margin-bottom: 10px;
+        opacity: 0.15;
+    }
+
+    .error-title {
+        font-family: 'Poppins', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #3a173f;
+        margin-bottom: 15px;
+    }
+
+    .error-desc {
+        font-size: 1.1rem;
+        color: #6c757d;
+        max-width: 500px;
+        margin-bottom: 30px;
+    }
+
+    .redirect-badge {
+        background: #f0f2f5;
+        color: #555;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        border: 1px solid #e0e0e0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 30px;
+    }
+
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.15em;
+        display: inline-block;
+        border: 2px solid currentcolor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spinner 0.75s linear infinite;
+    }
+
+    @keyframes spinner {
+        to { transform: rotate(360deg); }
+    }
+
+    .btn-home {
+        background-color: #3a173f;
+        color: white;
+        text-decoration: none;
+        padding: 12px 35px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: transform 0.2s, background 0.2s;
+        box-shadow: 0 4px 15px rgba(58, 23, 63, 0.2);
+    }
+    .btn-home:hover {
+        background-color: #5a2a60;
+        color: white;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="error-container">
+        
+        <div class="error-code">404</div>
+        <h1 class="error-title">Ops! Página não encontrada.</h1>
+        
+        <p class="error-desc">
+            Parece que o endereço que você tentou acessar não existe ou foi movido.
+        </p>
+
+        <div class="redirect-badge">
+            <span class="spinner-border-sm"></span>
+            <span>Redirecionando ao início em <strong id="countdown" style="color: #3a173f;">5</strong>s...</span>
+        </div>
+
+        <div>
+            <a href="/" class="btn-home">Voltar para o Início Agora</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Lógica de Redirecionamento Automático
+    document.addEventListener("DOMContentLoaded", function() {
+        let seconds = 7;
+        const countEl = document.getElementById('countdown');
+        
+        // Define a URL de destino (Home)
+        const targetUrl = "{% url 'cadastro:index' %}"; // Ajuste se o nome da sua rota for diferente
+
+        const interval = setInterval(() => {
+            seconds--;
+            if (countEl) countEl.innerText = seconds;
+
+            if (seconds <= 0) {
+                clearInterval(interval);
+                window.location.href = targetUrl;
+            }
+        }, 1000);
+    });
+</script>
+{% endblock %}

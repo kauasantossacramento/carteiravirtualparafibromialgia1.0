@@ -4,7 +4,6 @@ from django.utils import timezone
 import uuid
 
 class Usuario(AbstractUser):
-    # use o "username" como login; você pode guardar o CPF aqui:
     cpf = models.CharField(max_length=11, unique=True)
     data_nascimento = models.DateField(null=True, blank=True)
     sexo = models.CharField(max_length=20, blank=True)
@@ -13,9 +12,12 @@ class Usuario(AbstractUser):
     contato_urgencia_nome = models.CharField(max_length=100, blank=True)
     contato_urgencia_numero = models.CharField(max_length=20, blank=True)
 
+    # --- ADICIONE ESTA LINHA ---
+    # Isso diz ao Django: "Quando criar superuser pelo terminal, peça também estes campos"
+    REQUIRED_FIELDS = ['email', 'cpf']
+
     def __str__(self):
         return f"{self.get_full_name() or self.username} ({self.cpf})"
-
 
 class Solicitacao(models.Model):
     AGUARDANDO = "aguardando"
@@ -28,7 +30,7 @@ class Solicitacao(models.Model):
         (AGUARDANDO, "Aguardando análise"),
         (ANALISE_INICIADA, "Análise iniciada"),
         (ANALISE_CONCLUIDA, "Análise concluída"),
-        (EMITIDA, "Carteirinha emitida"),
+        (EMITIDA, "Carteira emitida"),
         (REJEITADA, "Rejeitada"),
     ]
 
@@ -36,6 +38,24 @@ class Solicitacao(models.Model):
     criado_em = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=AGUARDANDO)
     codigo = models.CharField(max_length=32, unique=True, blank=True)
+
+    # Campos de Pendência (Boolean)
+    pendencia_rg_frente = models.BooleanField(default=False)
+    pendencia_rg_verso = models.BooleanField(default=False)
+    pendencia_laudo = models.BooleanField(default=False)
+    pendencia_foto = models.BooleanField(default=False)
+
+    # Motivos de Rejeição (Choices)
+    MOTIVO_CHOICES = [
+        ('qualidade', 'Imagem com baixa qualidade/ilegível'),
+        ('invalido', 'Documento não identificado ou inválido'),
+        ('desatualizado', 'Documento fora da validade/antigo'),
+    ]
+
+    motivo_rg_frente = models.CharField(max_length=20, choices=MOTIVO_CHOICES, blank=True, null=True)
+    motivo_rg_verso = models.CharField(max_length=20, choices=MOTIVO_CHOICES, blank=True, null=True)
+    motivo_laudo = models.CharField(max_length=20, choices=MOTIVO_CHOICES, blank=True, null=True)
+    motivo_foto = models.CharField(max_length=20, choices=MOTIVO_CHOICES, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.codigo:

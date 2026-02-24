@@ -3,64 +3,217 @@
 
 {% block title %}Cadastre-se e garanta sua Carteira!{% endblock %}
 
+{% block head_extra %}
+<style>
+  /* --- 1. CONFIGURAÇÃO DE ALINHAMENTO GERAL --- */
+  
+  /* Definimos uma largura padrão para ambos os blocos */
+  :root {
+      --content-width: 1200px; /* Largura total do conteúdo */
+      --card-gap: 20px;
+  }
+
+  /* Ajuste do Banner */
+  .hero__inner {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      text-align: center;
+      padding: 80px 20px 100px; /* Mais padding embaixo para dar espaço aos cards */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .hero__title {
+      font-size: 2.5rem;
+      line-height: 1.2;
+      margin: 25px 0 35px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      max-width: 800px; /* Limita texto para não ficar muito largo */
+  }
+
+  .hero__actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+  }
+
+  /* --- 2. GRID DOS CARDS (FAQ + WHATSAPP) --- */
+  .faq {
+      display: grid;
+      /* Cria 4 colunas de tamanho igual no desktop */
+      grid-template-columns: repeat(4, 1fr); 
+      gap: var(--card-gap);
+      
+      /* O SEGREDO DO ALINHAMENTO ESTÁ AQUI: */
+      max-width: var(--content-width);
+      margin: -60px auto 50px; /* Sobe 60px para sobrepor o banner */
+      padding: 0 20px; /* Mesmo padding lateral do banner */
+      
+      position: relative;
+      z-index: 10;
+  }
+
+  /* Estilo base dos Cards */
+  .faq__item {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #f0f0f0;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      text-align: left;
+  }
+
+  .faq__item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(58, 23, 63, 0.12);
+  }
+
+  .faq__header { margin-bottom: 15px; }
+  
+  .chip {
+      background: #fdf2fb;
+      color: #3a173f;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+  }
+
+  .faq__text {
+      color: #666;
+      line-height: 1.5;
+      font-size: 0.9rem;
+  }
+
+  /* --- 3. BOTÃO WHATSAPP (Ajustado para Identidade) --- */
+  a.faq__cta {
+      background-color: #fcfaff; /* Fundo quase branco/roxo muito pálido */
+      border: 2px solid #f0f0f0; /* Borda sutil */
+      color: #3a173f; /* Texto Roxo */
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      gap: 10px;
+  }
+
+  a.faq__cta:hover {
+      background-color: #fdf2fb; /* Fundo roxo claro no hover */
+      border-color: #3a173f; /* Borda fica roxa */
+      transform: translateY(-5px);
+  }
+
+  .whatsapp-icon { 
+      font-size: 2rem; 
+      margin-bottom: 5px;
+      color: #3a173f; /* Ícone roxo */
+  }
+
+  /* Responsividade */
+  @media(max-width: 1024px) {
+      /* Tablet: 2 por linha */
+      .faq { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media(max-width: 768px) {
+      .hero__title { font-size: 1.8rem; }
+      .faq { 
+          grid-template-columns: 1fr; /* Mobile: 1 por linha */
+          margin-top: 30px; /* Remove sobreposição no mobile */
+      } 
+      .hero__inner { padding-bottom: 40px; }
+      .hero__actions { flex-direction: column; width: 100%; }
+      .btn { width: 100%; }
+      .hero__inner {padding-top: 20px;}
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <section
   class="hero hero--banner full-bleed"
-  style="--hero:url('{% static 'img/hero-valenca.jpg' %}'); --hero-focus: center 35%;"
+  style="--hero:url('{% static 'img/hero-valenca.jpg' %}'); --hero-focus: center 35%; background-size: cover; background-position: center;"
 >
   <div class="hero__inner">
-    <div class="hero__badge">
-      <span class="hero__icon">👤📝</span>
-      <span>Cadastro Inclusivo • Carteirinha de Prioridade</span>
+    <div class="hero__badge" style="background: rgba(255,255,255,0.95); padding: 8px 20px; border-radius: 50px; color: #3a173f; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <span class="hero__icon"></span>
+      <span>Cadastro Inclusivo • Carteira de Prioridade</span>
     </div>
 
     <h1 class="hero__title">
-      Cadastre-se e garanta sua <strong>Carteira de Identificação de Fibromialgia!</strong>
+      Cadastre-se e garanta sua<br><strong>Carteira de Identificação de Fibromialgia!</strong>
     </h1>
 
     <div class="hero__actions">
-      <a class="btn btn--primary btn--lg" href="{% url 'cadastro:registro' %}" style="text-decoration: none;">➕ cadastre-se!</a>
-      <a class="btn btn--outline btn--lg" href="{% url 'cadastro:login' %}" style="text-decoration: none;">🔎 acompanhar</a>
+    <a class="btn btn--primary btn--lg" href="{% url 'cadastro:registro' %}" 
+       style="text-decoration: none; min-width: 200px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Cadastre-se
+    </a>
+    
+    <a class="btn btn--outline btn--lg" href="{% url 'cadastro:login' %}" 
+       style="background: white; color: #3a173f; text-decoration: none; min-width: 200px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        Acompanhar
+    </a>
     </div>
   </div>
 </section>
 
-
 <section class="faq">
   <div class="faq__item">
     <div class="faq__header">
-      <span class="chip">O que é a <strong>Carteira</strong>?</span>
+      <span class="chip">O que é?</span>
     </div>
     <p class="faq__text">
       É um <strong>documento oficial</strong> que identifica o paciente com fibromialgia, garantindo
-      <strong>prioridade</strong> e acesso aos direitos já reconhecidos por lei.
+      <strong>prioridade</strong> e acesso aos direitos já reconhecidos pela Lei Federal nº 15.176/2025.
     </p>
   </div>
 
   <div class="faq__item">
     <div class="faq__header">
-      <span class="chip">Quem pode <strong>solicitar</strong>?</span>
+      <span class="chip">Quem solicita?</span>
     </div>
     <p class="faq__text">
       Qualquer cidadão <strong>diagnosticado</strong> com fibromialgia, mediante apresentação de
-      <strong>laudo médico com CID-10</strong>.
+      <strong>laudo médico com CID-10</strong> e documentos pessoais.
     </p>
   </div>
 
   <div class="faq__item">
     <div class="faq__header">
-      <span class="chip">Como funciona o <strong>cadastro</strong>?</span>
+      <span class="chip">Como funciona?</span>
     </div>
     <p class="faq__text">
-      O paciente preenche seus dados, anexa os documentos obrigatórios e envia pelo portal.
+      O paciente envia os dados pelo portal.
       A solicitação passa por <strong>análise da Secretaria de Saúde</strong> e, se aprovada,
-      <strong>gera a carteira</strong>.
+      <strong>gera a carteira digital</strong>.
     </p>
   </div>
 
-  <div class="faq__item faq__cta">
-    <span class="plus">+</span>
-    <span>Tem mais <strong>dúvidas</strong>?</span>
-  </div>
+  <a href="https://wa.me/5575983313436" target="_blank" class="faq__item faq__cta">
+    <span class="whatsapp-icon">💬</span>
+    <span style="font-size: 1rem; line-height: 1.4; font-weight: 600;">
+        Tem mais dúvidas?<br>
+        <small style="font-weight: 400; font-size: 0.85rem; opacity: 0.8;">Fale no WhatsApp</small>
+    </span>
+  </a>
+
 </section>
 {% endblock %}

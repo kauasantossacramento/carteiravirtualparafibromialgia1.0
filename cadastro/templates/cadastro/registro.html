@@ -3,191 +3,807 @@
 
 {% block title %}Novo Cadastro · Carteira Fibromialgia{% endblock %}
 
+{% block head_extra %}
+<style>
+  /* --- RESET BÁSICO PARA O FORMULÁRIO --- */
+  * { box-sizing: border-box; }
+
+  /* --- DESIGN SYSTEM CLEAN --- */
+  body.bg-page { background-color: #f8f9fa; }
+
+  .clean-card {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(58, 23, 63, 0.08);
+      border: none;
+      padding: 0;
+      overflow: hidden;
+      max-width: 800px;
+      margin: 40px auto; 
+      width: 95%; 
+      position: relative; 
+  }
+
+  /* --- OVERLAY DE SUCESSO --- */
+  .success-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.98); 
+      z-index: 100;
+      display: none; 
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-radius: 20px;
+      animation: fadeIn 0.4s ease-out;
+  }
+
+  .success-icon-box {
+      width: 90px;
+      height: 90px;
+      background: #27ae60;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
+      animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .success-check {
+      color: white;
+      font-size: 45px;
+      font-weight: bold;
+  }
+
+  .success-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      color: #3a173f;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+  }
+
+  .success-message {
+      color: #6c757d;
+      font-size: 1.1rem;
+      max-width: 80%;
+      line-height: 1.5;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scaleUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  /* --- ESTILOS GERAIS --- */
+  .clean-header {
+      padding: 40px 30px 20px;
+      text-align: center;
+      background: white;
+  }
+  .clean-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      color: #3a173f;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      line-height: 1.2;
+  }
+  .clean-subtitle {
+      color: #6c757d;
+      font-size: 0.95rem;
+      max-width: 500px;
+      margin: 0 auto;
+  }
+
+  /* --- STEPPER --- */
+  .stepper-container {
+      background: #fafafa;
+      padding: 20px 0;
+      border-top: 1px solid #f0f0f0;
+      border-bottom: 1px solid #f0f0f0;
+  }
+  .stepper-wrapper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      max-width: 600px; /* Aumentado levemente para caber 5 itens */
+      margin: 0 auto;
+      padding: 0 10px; 
+  }
+  
+  .stepper-line {
+      position: absolute;
+      top: 18px;
+      left: 5%;
+      width: 90%;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 1;
+  }
+
+  .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      cursor: default;
+      flex: 1; 
+      min-width: 0; 
+  }
+
+  .step-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #999;
+      margin-bottom: 8px;
+      transition: all 0.3s;
+  }
+  
+  .step-item.active .step-dot {
+      border-color: #3a173f;
+      background: #3a173f;
+      color: white;
+      box-shadow: 0 4px 10px rgba(58, 23, 63, 0.3);
+      transform: scale(1.1);
+  }
+  .step-item.completed .step-dot {
+      border-color: #27ae60;
+      background: #27ae60;
+      color: white;
+  }
+  .step-label {
+      font-size: 0.7rem; /* Levemente menor para caber 5 */
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px; 
+      color: #3a173f;
+      text-align: center;
+      white-space: nowrap; 
+  }
+
+  /* --- FORMULÁRIO --- */
+  .form-content { 
+      padding: 40px; 
+      padding-bottom: 0; 
+  }
+  
+  .form-step {
+      display: none;
+      animation: fadeSlide 0.4s ease-out;
+  }
+  .form-step.active { display: block; }
+  
+  @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+
+  .row { display: flex; flex-wrap: wrap; margin: 0 -10px; }
+  .col-md-6 { width: 50%; padding: 0 10px; }
+
+  .field { margin-bottom: 25px; }
+  .field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+  }
+  .field input, .field select, .field textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border 0.2s, box-shadow 0.2s;
+      background: #fdfdfd;
+      max-width: 100%; 
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: #3a173f;
+      background: white;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(58, 23, 63, 0.05);
+  }
+
+  .has-error input, .has-error select, .has-error textarea { 
+      border-color: #dc3545 !important; 
+      background: #fff8f8 !important; 
+  }
+  .error-msg { 
+      color: #dc3545; 
+      font-size: 0.8rem; 
+      margin-top: 5px; 
+      font-weight: 600; 
+      display: block;
+  }
+
+  .alert-custom {
+      background: #fff5f5;
+      border-left: 5px solid #dc3545;
+      color: #8a1f1f;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+  }
+  .alert-icon { font-size: 1.5rem; line-height: 1; }
+
+  .emergency-clean {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-left: 5px solid #e67e22; 
+      border-radius: 8px;
+      padding: 25px;
+      position: relative;
+      margin-top: 25px;
+  }
+  .emergency-tag {
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      background: #fff4e5;
+      color: #d35400;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid #fed;
+  }
+
+  /* --- RESUMO DA CONFIRMAÇÃO (NOVO) --- */
+  .summary-box {
+      background: #fdfdfd;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+  }
+  .summary-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #3a173f;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+  }
+  .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      border-bottom: 1px dashed #f5f5f5;
+      padding-bottom: 5px;
+  }
+  .summary-label { color: #666; font-weight: 500; }
+  .summary-value { color: #000; font-weight: 600; text-align: right; }
+  
+  .confirmation-alert {
+      text-align: center;
+      background: #e3f2fd;
+      color: #0d47a1;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      border: 1px solid #bbdefb;
+  }
+
+  /* --- BOTÕES --- */
+  .wizard-footer {
+      padding: 20px 40px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      gap: 15px;
+  }
+  
+  .btn-next, .btn-submit, .btn-prev {
+      padding: 5px 24px; 
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      min-width: 130px; 
+      text-align: center;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .btn-next { background: #3a173f; color: white; border: none; box-shadow: 0 4px 15px rgba(58, 23, 63, 0.2); }
+  .btn-next:hover { background: #53215a; transform: translateY(-2px); }
+
+  .btn-submit { background-color: #27ae60; color: white; border: none; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2); }
+  .btn-submit:hover { background-color: #219150; transform: translateY(-2px); }
+  
+  .btn-prev { background: transparent; border: 2px solid #eee; color: #888; }
+  .btn-prev:hover { border-color: #3a173f; color: #3a173f; }
+
+  @media(max-width: 600px) {
+      .clean-card { margin: 20px 10px; width: auto; border-radius: 20px; }
+      .form-content { padding: 25px 20px; }
+      .stepper-line { width: 80%; left: 10%; }
+      .step-label { display: none; }
+      .wizard-footer { flex-direction: column-reverse; padding: 20px; }
+      .btn-next, .btn-submit, .btn-prev { width: 100%; padding: 14px 0; }
+      .col-md-6 { width: 100%; }
+      .clean-title { font-size: 1.5rem; }
+      .summary-row { flex-direction: column; text-align: left; }
+      .summary-value { text-align: left; }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="container">
-  <div class="card card--form">
-    <div class="card__header">
-      <div class="hero__badge">
-        <span class="hero__icon">📝</span>
-        <span>Novo Cadastro / Solicitação</span>
-      </div>
-      <h2 class="card__title">Preencha os dados abaixo</h2>
-      <p class="card__subtitle">Anexe os documentos obrigatórios (RG, laudo com CID-10, foto 3x4) e envie para análise.</p>
+  <div class="clean-card">
+    
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon-box">
+            <div class="success-check">✓</div>
+        </div>
+        <h2 class="success-title">Tudo Pronto!</h2>
+        <p class="success-message">Estamos processando seu cadastro.<br>Você será redirecionado em instantes.</p>
     </div>
 
-    <form method="post" enctype="multipart/form-data" novalidate>
-      {% csrf_token %}
+    <div class="clean-header">
+      <h2 class="clean-title">Solicitação da Carteira</h2>
+      <p class="clean-subtitle">Preencha os dados abaixo para emitir sua Carteira de Identificação.</p>
+    </div>
 
-      {% if form.non_field_errors %}
-      <div class="form-alert">
-        {{ form.non_field_errors }}
-      </div>
-      {% endif %}
-
-      <div class="form-grid">
-        {% for field in form %}
-        <div class="field {% if field.errors %}has-error{% endif %}">
-          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-          {{ field }}
-          {% if field.help_text %}
-          <small class="help">{{ field.help_text|safe }}</small>
-          {% endif %}
-          {% for err in field.errors %}
-            <div class="error">{{ err }}</div>
-          {% endfor %}
+    <div class="stepper-container">
+        <div class="stepper-wrapper">
+            <div class="stepper-line"></div>
+            
+            <div class="step-item active" data-target="0">
+                <div class="step-dot">1</div>
+                <div class="step-label">Pessoal</div>
+            </div>
+            <div class="step-item" data-target="1">
+                <div class="step-dot">2</div>
+                <div class="step-label">Contato</div>
+            </div>
+            <div class="step-item" data-target="2">
+                <div class="step-dot">3</div>
+                <div class="step-label">Acesso</div>
+            </div>
+            <div class="step-item" data-target="3">
+                <div class="step-dot">4</div>
+                <div class="step-label">Anexos</div>
+            </div>
+            <div class="step-item" data-target="4">
+                <div class="step-dot">5</div>
+                <div class="step-label">Confirmação</div>
+            </div>
         </div>
-        {% endfor %}
+    </div>
+
+    <form id="wizardForm" method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      
+      <div class="form-content">
+
+          {% if form.errors %}
+          <div class="alert-custom" id="globalErrorAlert">
+              <div class="alert-icon">⚠️</div>
+              <div>
+                  <strong style="font-size:1.1rem; display:block; margin-bottom:5px;">Atenção! Encontramos alguns problemas.</strong>
+                  Verifique os campos destacados em vermelho.<br>
+                  <small style="color: #666; font-weight: 600;">(Por segurança, redigite sua senha)</small>
+              </div>
+          </div>
+          {% endif %}
+          
+          <div class="form-step active" data-step="0">
+              <div class="row">
+                  <div class="col-md-6 field {% if form.first_name.errors %}has-error{% endif %}">
+                      <label>Nome *</label>
+                      {{ form.first_name }}
+                      {% for e in form.first_name.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  </div>
+                  <div class="col-md-6 field {% if form.last_name.errors %}has-error{% endif %}">
+                      <label>Sobrenome *</label>
+                      {{ form.last_name }}
+                      {% for e in form.last_name.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  </div>
+              </div>
+
+              <div class="field {% if form.cpf.errors %}has-error{% endif %}">
+                  <label>CPF *</label>
+                  {{ form.cpf }}
+                  {% for e in form.cpf.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  <small style="font-size: 0.75rem; color: #888;">Digite apenas números.</small>
+              </div>
+
+              <div class="row">
+                  <div class="col-md-6 field {% if form.data_nascimento.errors %}has-error{% endif %}">
+                      <label>Data de Nascimento *</label>
+                      {{ form.data_nascimento }}
+                      {% for e in form.data_nascimento.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  </div>
+                  <div class="col-md-6 field {% if form.sexo.errors %}has-error{% endif %}">
+                      <label>Gênero</label>
+                      {{ form.sexo }}
+                      {% for e in form.sexo.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  </div>
+              </div>
+          </div>
+
+          <div class="form-step" data-step="1">
+              <div class="field {% if form.telefone.errors %}has-error{% endif %}">
+                  <label>Celular / WhatsApp *</label>
+                  {{ form.telefone }}
+                  {% for e in form.telefone.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+              </div>
+              
+              <div class="field {% if form.endereco.errors %}has-error{% endif %}">
+                  <label>Endereço Completo *</label>
+                  {{ form.endereco }}
+                  {% for e in form.endereco.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+              </div>
+
+              <div class="emergency-clean">
+                  <span class="emergency-tag">Contato de Emergência</span>
+                  <div class="field {% if form.contato_urgencia_nome.errors %}has-error{% endif %}">
+                      <label>Nome do Contato</label>
+                      {{ form.contato_urgencia_nome }}
+                      {% for e in form.contato_urgencia_nome.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  </div>
+                  <div class="field {% if form.contato_urgencia_numero.errors %}has-error{% endif %}" style="margin-bottom:0">
+                      <label>Telefone do Contato</label>
+                      {{ form.contato_urgencia_numero }}
+                      {% for e in form.contato_urgencia_numero.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  </div>
+              </div>
+          </div>
+
+          <div class="form-step" data-step="2">
+              <div style="background: #fdf2fb; border: 1px solid #f0dbe9; padding: 15px; border-radius: 10px; margin-bottom: 20px; color: #3a173f;">
+                  <strong>🔒 Defina uma senha segura.</strong><br>
+                  <small>Você usará ela para acessar a carteira digital futuramente.</small>
+              </div>
+              
+              <div class="field {% if form.password1.errors %}has-error{% endif %}">
+                  <label>Senha *</label>
+                  {{ form.password1 }}
+                  {% for e in form.password1.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="field {% if form.password2.errors %}has-error{% endif %}">
+                  <label>Confirme a Senha *</label>
+                  {{ form.password2 }}
+                  {% for e in form.password2.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+              </div>
+          </div>
+
+          <div class="form-step" data-step="3">
+              <div style="background: #fff8e1; border: 1px solid #ffe0b2; padding: 15px; border-radius: 10px; margin-bottom: 20px; color: #f57f17;">
+                  <strong>📸 Documentação Obrigatória.</strong><br>
+                  <small>As fotos devem ser legíveis (Formatos: JPG, PNG ou PDF).</small>
+              </div>
+              
+              <div class="row">
+                  <div class="col-md-6 field {% if form.rg_frente.errors %}has-error{% endif %}">
+                      <label>RG (Frente) *</label>
+                      {{ form.rg_frente }}
+                      {% for e in form.rg_frente.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  </div>
+                  <div class="col-md-6 field {% if form.rg_verso.errors %}has-error{% endif %}">
+                      <label>RG (Verso) *</label>
+                      {{ form.rg_verso }}
+                      {% for e in form.rg_verso.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+                  </div>
+              </div>
+
+              <div class="field {% if form.laudo.errors %}has-error{% endif %}">
+                  <label>Laudo Médico (com CID) *</label>
+                  {{ form.laudo }}
+                  {% for e in form.laudo.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+              </div>
+
+              <div class="field {% if form.foto.errors %}has-error{% endif %}">
+                  <label>Foto 3x4 (Rosto) *</label>
+                  {{ form.foto }}
+                  {% for e in form.foto.errors %}<div class="error-msg">{{ e }}</div>{% endfor %}
+              </div>
+              
+              {% if form.non_field_errors %}
+                  <div class="error-msg text-center mt-3">{{ form.non_field_errors }}</div>
+              {% endif %}
+          </div>
+
+          <div class="form-step" data-step="4">
+              <div class="confirmation-alert">
+                  Por favor, verifique e confirme os seus dados preenchidos.<br>Está tudo certinho? :)
+              </div>
+
+              <div class="summary-box">
+                  <div class="summary-title">Dados Pessoais</div>
+                  <div class="summary-row">
+                      <span class="summary-label">Nome Completo:</span>
+                      <span class="summary-value" id="sum_nome">---</span>
+                  </div>
+                  <div class="summary-row">
+                      <span class="summary-label">CPF:</span>
+                      <span class="summary-value" id="sum_cpf">---</span>
+                  </div>
+                  <div class="summary-row">
+                      <span class="summary-label">Data Nasc.:</span>
+                      <span class="summary-value" id="sum_nasc">---</span>
+                  </div>
+                  <div class="summary-row">
+                      <span class="summary-label">Gênero:</span>
+                      <span class="summary-value" id="sum_sexo">---</span>
+                  </div>
+              </div>
+
+              <div class="summary-box">
+                  <div class="summary-title">Contato</div>
+                  <div class="summary-row">
+                      <span class="summary-label">Telefone:</span>
+                      <span class="summary-value" id="sum_tel">---</span>
+                  </div>
+                  <div class="summary-row">
+                      <span class="summary-label">Endereço:</span>
+                      <span class="summary-value" id="sum_end">---</span>
+                  </div>
+                  <div class="summary-row">
+                      <span class="summary-label">Contato Emergência:</span>
+                      <span class="summary-value" id="sum_emer_nome">---</span>
+                  </div>
+              </div>
+
+              <div class="summary-box">
+                  <div class="summary-title">Documentos Anexados</div>
+                  <div class="summary-row">
+                      <span class="summary-label">RG (Frente):</span>
+                      <span class="summary-value" id="sum_file_rgf">Pendente</span>
+                  </div>
+                  <div class="summary-row">
+                      <span class="summary-label">RG (Verso):</span>
+                      <span class="summary-value" id="sum_file_rgv">Pendente</span>
+                  </div>
+                  <div class="summary-row">
+                      <span class="summary-label">Laudo:</span>
+                      <span class="summary-value" id="sum_file_laudo">Pendente</span>
+                  </div>
+                  <div class="summary-row">
+                      <span class="summary-label">Foto 3x4:</span>
+                      <span class="summary-value" id="sum_file_foto">Pendente</span>
+                  </div>
+              </div>
+          </div>
+
       </div>
 
-      <div class="form-actions">
-        <a href="{% url 'cadastro:index' %}" class="btn btn--outline" style="text-decoration: none;">Cancelar</a>
-        <button type="submit" class="btn btn--primary btn--lg">Enviar Solicitação</button>
+      <div class="wizard-footer">
+          <button type="button" id="btnPrev" class="btn-prev" style="display: none;">Voltar</button>
+          <button type="button" id="btnNext" class="btn-next">Próxima Etapa</button>
+          <button type="submit" id="btnSubmit" class="btn-submit" style="display: none;">Confirmar e Enviar</button>
       </div>
+
     </form>
   </div>
 </section>
 
 <script>
-(function () {
-  const cpfInput =
-    document.querySelector('input[name$="cpf"]') ||
-    document.querySelector('input[id$="cpf"]');
-  if (!cpfInput) return;
+document.addEventListener("DOMContentLoaded", function() {
+    
+    const steps = document.querySelectorAll('.form-step');
+    const dots = document.querySelectorAll('.step-item');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const cpfInput = document.querySelector('input[name="cpf"]');
+    
+    let currentStep = 0;
 
-  // ===== helpers =====
-  const getDigits = v => String(v || '').replace(/\D/g, '');
-  function maskCPF(digits) {
-    digits = getDigits(digits).slice(0, 11);
-    let out = '';
-    for (let i = 0; i < digits.length; i++) {
-      out += digits[i];
-      if (i === 2 || i === 5) out += '.';
-      if (i === 8) out += '-';
+    // --- DETECÇÃO DE ERROS ---
+    function detectErrorStep() {
+        const errorMsg = document.querySelector('.error-msg, .has-error');
+        if (errorMsg) {
+            const parentStep = errorMsg.closest('.form-step');
+            if (parentStep) {
+                return parseInt(parentStep.dataset.step);
+            }
+        }
+        return 0; 
     }
-    return out;
-  }
-  function digitsCount(str) { return (str.match(/\d/g) || []).length; }
-  // posição do caret após o N-ésimo dígito (1-based). 0 => início
-  function caretPosForNthDigit(masked, n) {
-    if (n <= 0) return 0;
-    let count = 0;
-    for (let i = 0; i < masked.length; i++) {
-      if (/\d/.test(masked[i])) {
-        count++;
-        if (count === n) return i + 1;
-      }
-    }
-    return masked.length;
-  }
+    
+    currentStep = detectErrorStep();
 
-  // ===== UI/UX básico =====
-  let err = cpfInput.nextElementSibling;
-  if (!err || !err.classList.contains('error')) {
-    err = document.createElement('div');
-    err.className = 'error';
-    err.style.display = 'none';
-    err.style.marginTop = '6px';
-    cpfInput.insertAdjacentElement('afterend', err);
-  }
-  const showError = msg => { err.textContent = msg; err.style.display = 'block'; cpfInput.classList.add('has-error'); cpfInput.setCustomValidity(msg); };
-  const clearError = () => { err.textContent = ''; err.style.display = 'none'; cpfInput.classList.remove('has-error'); cpfInput.setCustomValidity(''); };
+    // --- ATUALIZAR RESUMO (NOVO) ---
+    function updateSummary() {
+        // Campos de Texto
+        const nome = document.querySelector('input[name="first_name"]').value;
+        const sobrenome = document.querySelector('input[name="last_name"]').value;
+        document.getElementById('sum_nome').textContent = `${nome} ${sobrenome}`.trim() || '---';
+        
+        document.getElementById('sum_cpf').textContent = document.querySelector('input[name="cpf"]').value || '---';
+        
+        // Data formatada
+        const nasc = document.querySelector('input[name="data_nascimento"]').value;
+        if(nasc) {
+            const parts = nasc.split('-');
+            document.getElementById('sum_nasc').textContent = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        } else {
+            document.getElementById('sum_nasc').textContent = '---';
+        }
 
-  cpfInput.setAttribute('inputmode', 'numeric');
-  cpfInput.setAttribute('autocomplete', 'off');
-  cpfInput.setAttribute('maxlength', '14'); // máscara
-  if (!cpfInput.placeholder) cpfInput.setAttribute('placeholder', '000.000.000-00');
-  if (/^\d{11}$/.test(cpfInput.value)) cpfInput.value = maskCPF(cpfInput.value);
+        const sexoSelect = document.querySelector('select[name="sexo"]');
+        document.getElementById('sum_sexo').textContent = sexoSelect.options[sexoSelect.selectedIndex].text;
 
-  // ===== captura do que o usuário pretende (antes do browser aplicar) =====
-  let lastIntent = null; // { type, data, digitsBefore }
-  cpfInput.addEventListener('beforeinput', (e) => {
-    // quantos dígitos existem antes do caret atual
-    const start = cpfInput.selectionStart || 0;
-    const before = cpfInput.value.slice(0, start);
-    const digitsBefore = digitsCount(before);
+        document.getElementById('sum_tel').textContent = document.querySelector('input[name="telefone"]').value || '---';
+        document.getElementById('sum_end').textContent = document.querySelector('textarea[name="endereco"]').value || '---';
+        
+        const emNome = document.querySelector('input[name="contato_urgencia_nome"]').value;
+        const emTel = document.querySelector('input[name="contato_urgencia_numero"]').value;
+        document.getElementById('sum_emer_nome').textContent = emNome ? `${emNome} (${emTel})` : '---';
 
-    // só permitimos inserir dígitos; se vier caractere que não é dígito, cancela
-    if (e.inputType === 'insertText' && e.data && /\D/.test(e.data)) {
-      e.preventDefault(); // evita “travamento” e entrada de símbolos
-      return;
-    }
+        // Arquivos
+        function setFileStatus(inputName, targetId) {
+            const input = document.querySelector(`input[name="${inputName}"]`);
+            const target = document.getElementById(targetId);
+            if (input.files && input.files.length > 0) {
+                target.textContent = input.files[0].name;
+                target.style.color = "#27ae60"; // Verde se ok
+            } else {
+                target.textContent = "Não selecionado";
+                target.style.color = "#e74c3c"; // Vermelho se faltar
+            }
+        }
 
-    lastIntent = {
-      type: e.inputType,       // insertText, deleteContentBackward, deleteContentForward, etc.
-      data: e.data || '',
-      digitsBefore
-    };
-  });
-
-  // ===== ao input: formatar e recuperar o caret corretamente =====
-  cpfInput.addEventListener('input', () => {
-    const digits = getDigits(cpfInput.value).slice(0, 11);
-    const masked = maskCPF(digits);
-
-    // Se não houve beforeinput (casos raros), coloca caret no fim
-    let desiredDigitsBefore = digits.length;
-
-    if (lastIntent) {
-      desiredDigitsBefore = lastIntent.digitsBefore;
-      if (lastIntent.type === 'insertText' && /\d/.test(lastIntent.data)) {
-        desiredDigitsBefore = Math.min(digits.length, desiredDigitsBefore + 1);
-      } else if (lastIntent.type === 'deleteContentBackward') {
-        desiredDigitsBefore = Math.max(0, desiredDigitsBefore - 1);
-      } else if (lastIntent.type === 'deleteContentForward') {
-        // mantém
-      }
+        setFileStatus('rg_frente', 'sum_file_rgf');
+        setFileStatus('rg_verso', 'sum_file_rgv');
+        setFileStatus('laudo', 'sum_file_laudo');
+        setFileStatus('foto', 'sum_file_foto');
     }
 
-    cpfInput.value = masked;
-    const newPos = caretPosForNthDigit(masked, desiredDigitsBefore);
-    requestAnimationFrame(() => cpfInput.setSelectionRange(newPos, newPos));
+    // --- NAVEGAÇÃO ---
+    function showStep(n) {
+        steps.forEach(s => s.classList.remove('active'));
+        steps[n].classList.add('active');
+        
+        btnPrev.style.display = n === 0 ? 'none' : 'inline-flex';
+        
+        // Ajuste para o novo número de passos (0 a 4)
+        if (n === steps.length - 1) {
+            btnNext.style.display = 'none';
+            btnSubmit.style.display = 'inline-flex';
+            // Chama o resumo ao chegar no último passo
+            updateSummary();
+        } else {
+            btnNext.style.display = 'inline-flex';
+            btnSubmit.style.display = 'none';
+        }
+        updateDots(n);
+    }
 
-    lastIntent = null;
-    clearError();
-    cpfInput.setCustomValidity('');
-  });
+    function updateDots(n) {
+        dots.forEach((dot, index) => {
+            dot.classList.remove('active', 'completed');
+            const dotCircle = dot.querySelector('.step-dot');
+            
+            if (index < n) {
+                dot.classList.add('completed');
+                dotCircle.innerHTML = '✓';
+            } else if (index === n) {
+                dot.classList.add('active');
+                dotCircle.innerHTML = index + 1;
+            } else {
+                dotCircle.innerHTML = index + 1;
+            }
+        });
+    }
 
-  // ===== validação =====
-  cpfInput.addEventListener('blur', validateField);
+    // --- VALIDAÇÃO ---
+    function validateStep(n) {
+        // Se for a etapa de confirmação (índice 4), não precisa validar campos novos
+        if (n === 4) return true;
 
-  function cpfDV(cpf) {
-    if (!cpf || cpf.length !== 11) return false;
-    if (/^(\d)\1{10}$/.test(cpf)) return false;
-    let s = 0, r;
-    for (let i = 1; i <= 9; i++) s += parseInt(cpf[i-1],10)*(11-i);
-    r = (s*10)%11; if (r===10||r===11) r=0;
-    if (r !== parseInt(cpf[9],10)) return false;
-    s = 0;
-    for (let i = 1; i <= 10; i++) s += parseInt(cpf[i-1],10)*(12-i);
-    r = (s*10)%11; if (r===10||r===11) r=0;
-    return r === parseInt(cpf[10],10);
-  }
-  function validateField() {
-    const digits = getDigits(cpfInput.value);
-    if (digits.length !== 11) { showError('Informe um CPF com 11 dígitos.'); return false; }
-    if (!cpfDV(digits)) { showError('CPF inválido.'); return false; }
-    clearError(); return true;
-  }
+        const currentInputs = steps[n].querySelectorAll('input, select, textarea');
+        let valid = true;
+        let firstInvalid = null;
 
-  // ===== envio sem máscara =====
-  const form = cpfInput.closest('form');
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      const digits = getDigits(cpfInput.value);
-      if (!cpfDV(digits)) {
-        e.preventDefault();
-        showError(digits.length !== 11 ? 'Informe um CPF com 11 dígitos.' : 'CPF inválido.');
-        cpfInput.focus();
-        return;
-      }
-      cpfInput.value = digits; // Django recebe 11 chars (sem pontos/traço)
-      clearError();
-      cpfInput.setCustomValidity('');
+        currentInputs.forEach(input => {
+            if (input.type === 'hidden') return;
+            if (!input.checkValidity()) {
+                input.reportValidity(); 
+                input.closest('.field').classList.add('has-error');
+                valid = false;
+                if(!firstInvalid) firstInvalid = input;
+            } else {
+                input.closest('.field').classList.remove('has-error');
+            }
+        });
+
+        if (n === 0 && cpfInput) {
+            const cleanCPF = cpfInput.value.replace(/\D/g, '');
+            if (cleanCPF.length > 0 && cleanCPF.length < 11) {
+                 cpfInput.setCustomValidity("O CPF deve ter 11 dígitos.");
+                 cpfInput.reportValidity();
+                 cpfInput.closest('.field').classList.add('has-error');
+                 valid = false;
+                 if(!firstInvalid) firstInvalid = cpfInput;
+            } else {
+                 cpfInput.setCustomValidity(""); 
+                 if (valid) cpfInput.closest('.field').classList.remove('has-error');
+            }
+        }
+
+        if(firstInvalid) firstInvalid.focus();
+        return valid;
+    }
+
+    // --- MÁSCARA DE CPF ---
+    if(cpfInput) {
+        cpfInput.addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if(v.length > 11) v = v.slice(0, 11);
+            
+            if(v.length > 9) {
+                e.target.value = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            } else if(v.length > 6) {
+                e.target.value = v.replace(/(\d{3})(\d{3})(\d+)/, "$1.$2.$3");
+            } else if(v.length > 3) {
+                e.target.value = v.replace(/(\d{3})(\d+)/, "$1.$2");
+            } else {
+                e.target.value = v;
+            }
+        });
+    }
+
+    // --- EVENTOS ---
+    btnNext.addEventListener('click', () => {
+        if(validateStep(currentStep)) {
+            currentStep++;
+            showStep(currentStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     });
-  }
-})();
+
+    btnPrev.addEventListener('click', () => {
+        currentStep--;
+        showStep(currentStep);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    btnSubmit.addEventListener('click', (e) => {
+        // Validação final (por segurança)
+        if (!validateStep(currentStep)) {
+            e.preventDefault(); 
+        } else {
+            e.preventDefault();
+            
+            document.getElementById('successOverlay').style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            setTimeout(() => {
+                document.getElementById('wizardForm').submit();
+            }, 1500);
+        }
+    });
+
+    showStep(currentStep);
+});
 </script>
-
-
 {% endblock %}
-
